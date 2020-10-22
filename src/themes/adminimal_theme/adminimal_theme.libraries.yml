@@ -1,0 +1,23 @@
+comnews:
+  css:
+    theme:
+      css/style.css: {}
+  js:
+    js/script.js: {}
+global-styling:
+  version: VERSION
+  css:
+    base:
+      css/adminimal.css: {}
+
+google-fonts:
+  version: VERSION
+  css:
+    base:
+      css/adminimal_fonts.css: {}
+
+custom-styling:
+  version: VERSION
+  css:
+    theme:
+      public://adminimal-custom.css: {}

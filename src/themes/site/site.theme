@@ -1,0 +1,236 @@
+<?php
+  use Symfony\Component\HttpFoundation\RedirectResponse;
+
+
+/**
+ * 
+ * 
+ * 
+ */
+function site_preprocess_views_view_field(&$variables) {
+  $view = $variables['view'];
+  
+  //var_dump($variables['field']->realField);
+  if (in_array($view->storage->id(), array('rubrika','authors_articles')) && in_array($variables['field']->realField, array('title','body_value'))) {
+
+    
+    $node = $variables['row']->_entity;
+   
+    $url = cn_getNodeAlias($node);
+    if($variables['field']->realField == 'title') $string = '<a href="'.$url.'">'.$node->title->value.'</a>';
+    if($variables['field']->realField == 'body_value') $string = '<a href="'.$url.'">'.cn_renderLid($node->body,300).'</a>';
+    $variables['output'] = \Drupal\Core\Render\Markup::create($string);  
+      
+  }
+  if (in_array($view->storage->id(), array('rubrika')) && in_array($variables['field']->realField, array('field_tags_target_id'))) {
+
+    $node = $variables['row']->_entity;
+    $url = cn_getNodeAlias($node);
+    $img = '';
+    $cl = ' no-img';
+    if(count($node->field_image->getValue())) {
+      $img = '<a href="'.$url.'"><img class="image" src="'.cn_getImgUrl('large',$node->field_image).'" /></a>';
+      $cl = '';
+    } 
+    $tags = str_replace('<a href="/taxonomy/term/1003" hreflang="und">Скрытая</a>','',str_replace('<a href="/taxonomy/term/1003" hreflang="und">Скрытая</a> &bull; ','',str_replace(' &bull; <a href="/taxonomy/term/1003" hreflang="und">Скрытая</a>','',$variables['output'])));
+    $industries = array();
+    $is_de = false;
+    foreach($node->field_folders->getValue() as $f){
+      if(in_array($f['target_id'],array(1012,1016,1022))){
+        foreach($node->field_de_industry->getValue() as $i){
+          $term = \Drupal\taxonomy\Entity\Term::load(intval($i['target_id']));
+          $c = explode(';',$term->field_de_color->value);
+          $c = $c[1];
+          $industries[] = '<a style="color:'.$c.';" href="/digital-economy/companies'.\Drupal::service('path.alias_manager')->getAliasByPath('/taxonomy/term/'.$term->id()).'">'.$term->name->value.'</a>';
+        }
+        $is_de = true;
+        $tags = implode(' &bull; ',$industries);
+        break;
+      }
+    }
+    $is_video = false;
+    foreach($node->get('field_folders')->getValue() as $f){
+      if(in_array($f['target_id'],array('1170'))){ // видеоинтервью
+        $is_video = true;
+        break;
+      }
+    } 
+    
+    if(in_array($node->getType(), array('interview','editorial'))){
+      if(!$is_video){
+        $string = '<div class="node'.$cl.'">
+          <div class="img">'.$img.'</div>
+          <div class="date">'.cn_convertDateFromStorageFormat($node->field_date->value,'d.m.Y').'</div>
+          <div class="person"><a href="'.$url.'">'.cn_renderNodePerson($node).'</a></div>
+          <div class="title"><a href="'.$url.'">'.$node->title->value.'</a></div>
+          </div>';
+          
+          if($node->getType() == 'interview' && cn_bnScope()=='de-all'){
+            $string .='<div class="body"><a href="'.$url.'">'.cn_renderLid($node->body,200, true).'</a></div>';
+          } else {
+            $string .='<div class="body"><a href="'.$url.'">'.cn_renderLid($node->body,300).'</a></div>';
+          }
+          $string .='<div class="tags">'.$tags.'</div>
+        <div class="clear"></div>';
+      } else {
+          $string = '<div class="node'.$cl.'">
+            <div class="video"><iframe src="https://www.youtube.com/embed/'.cn_getYoutubeId($node->field_url->uri).'" frameborder=0 vspace=0 hspace=0
+              width="1280" height="720" marginwidth=0 marginheight=0 scrolling=no
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+            <div class="date">'.cn_convertDateFromStorageFormat($node->field_date->value,'d.m.Y').'</div>
+            <div class="person"><a href="'.$url.'">'.cn_renderNodePerson($node).'</a></div>
+            <div class="title"><a href="'.$url.'">'.$node->field_alt_title->value.'</a></div>
+          </div>';
+          
+          if($node->getType() == 'interview' && cn_bnScope()=='de-all'){
+            $string .='<div class="body"><a href="'.$url.'">'.cn_renderLid($node->body,200, true).'</a></div>';
+          } else {
+            $string .='<div class="body"><a href="'.$url.'">'.cn_renderLid($node->body,300).'</a></div>';
+          }
+          $string .='<div class="tags">'.$tags.'</div><div class="clear"></div>';
+      }  
+
+    } else {
+
+      if(in_array($node->getType(), array('review'))){
+        $is_point = false;
+        foreach($node->get('field_folders')->getValue() as $f){
+          if(in_array($f['target_id'],array('1179'))){ // точка зрения
+            $is_point = true;
+            break;
+          }
+        } 
+        if($is_point){
+          $string = '<div class="node'.$cl.'">
+            <div class="img">'.$img.'</div>
+            <div class="date">'.cn_convertDateFromStorageFormat($node->field_date->value,'d.m.Y').'</div>
+            <div class="person"><a href="'.$url.'">'.cn_renderNodePerson($node).'</a></div>
+            <div class="title"><a href="'.$url.'">'.$node->title->value.'</a></div>
+            </div>
+            <div class="body"><a href="'.$url.'">'.cn_renderLid($node->body,300).'</a></div>
+            <div class="clear"></div>';
+            
+        } else {
+          $string = '
+          '.$img.'
+          <div class="node'.$cl.'">
+            <div class="date">'.cn_convertDateFromStorageFormat($node->field_date->value,'d.m.Y').'</div>
+            <div class="title"><a href="'.$url.'">'.$node->title->value.'</a></div>
+            <div class="body"><a href="'.$url.'">'.cn_renderLid($node->body,300).'</a></div>
+          </div><div class="clear"></div>';  
+        }
+      } else {  
+        $string = '
+        '.$img.'
+        <div class="node'.$cl.'">
+          <div class="date">'.cn_convertDateFromStorageFormat($node->field_date->value,'d.m.Y').'</div>
+          <div class="title"><a href="'.$url.'">'.$node->title->value.'</a></div>
+          <div class="body"><a href="'.$url.'">'.cn_renderLid($node->body,300).'</a></div>
+          <div class="tags">'.$tags.'</div>
+        </div><div class="clear"></div>';
+      }
+    }
+    $variables['output'] = \Drupal\Core\Render\Markup::create($string);  
+      
+  }
+}
+
+/**
+ * Prepares variables for HTML document templates.
+ *
+ * Default template: html.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - page: A render element representing the page.
+ */
+function site_preprocess_html(&$variables) {
+  $request = \Drupal::request();
+  $url = explode('?',$request->getRequestUri());
+  $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url[0]));
+  $url = explode('/',$url[0]);
+  $variables['path_classes'] = 'page'.implode('-',$url).' level1-'.cn_getval($url[1]).' level2-'.cn_getval($url[2]).' level3-'.cn_getval($url[3]).' path-'.cn_getVal($url[1]).' path'.implode('-',$path);
+
+
+}
+/**
+ * 
+ * 
+ */
+function site_page_attachments_alter(array &$page) {
+  $viewport = [
+    '#type' => 'html_tag',
+    '#tag' => 'meta',
+    '#attributes' => [
+      'name' => 'viewport',
+      //'content' => 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
+      'content' => 'width=device-width',
+    ],
+  ];
+  $page['#attached']['html_head'][] = [$viewport, 'viewport'];
+}
+
+
+/**
+ * @file
+ * Bootstrap sub-theme.
+ *
+ * Place your custom PHP code in this file.
+ */
+//print '==============================';
+function site_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+/* Redirect to arhiv for old pages */
+/*
+$request = \Drupal::request();
+
+$path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($request->getRequestUri()));
+ 
+  if($path[1] == 'node'){
+    // If there is HTTP Exception..
+    if ($exception = $request->attributes->get('exception')) {
+      // Get the status code.
+      $status_code = $exception->getStatusCode();
+      if (in_array($status_code, array(404))) {
+        if(intval($path[2])< 200000 ){ 
+          $response = new RedirectResponse('/content/'.intval($path[2]), 302);
+          $response->send();
+        }
+      }
+    } else {
+      $node = \Drupal\node\Entity\Node::load(intval($path[2]));  
+      $node_type = $node->getType();
+      if($node_type == 'article'){
+        $url = explode('/',$request->getRequestUri());
+        $url[1] = 'content';
+        $url = implode('/',$url);
+        $response = new RedirectResponse($url, 302);
+        $response->send();
+      }    
+    }
+  }  
+*/  
+/********************************/
+
+
+
+}
+/*
+function site_preprocess_node(&$variables) {
+  
+  $node = $variables['node'];
+  $node_type = $node->getType();
+  if($variables['view_mode'] == 'full' && $node_type == 'article'){
+    $url = explode('/',$variables['url']);
+      $url[1] = 'content';
+      $url = implode('/',$url);
+    
+    //var_dump('http://comnews2019'.$url);
+    $response = new RedirectResponse('http://comnews2019'.$url, 301);
+		$response->send();
+  }
+}
+*/
+
+
+
+

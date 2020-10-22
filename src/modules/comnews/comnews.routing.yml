@@ -1,0 +1,447 @@
+#=========================================
+comnews.contentpage:
+  path: '/content/{id}/{s1}/{s2}/{s3}/{s4}/{s5}/{s6}/{s7}/{s8}/{s9}'
+  defaults:
+    _title: 'content'
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderNode'
+    id: '0'
+    s1: '' 
+    s2: ''
+    s3: ''
+    s4: ''
+    s5: ''
+    s6: ''
+    s7: ''
+    s8: ''
+    s9: ''
+  requirements:
+    id: \d+
+    _access: 'TRUE'
+  options:
+    no_cache: 'TRUE'
+#=========================================
+comnews.redirect.tg:
+  path: '/29/{id}'
+  defaults:
+    _title: 'content'
+    _controller: '\Drupal\comnews\Controller\ComNewsController::redirectFromSNLink'
+    id: '0'
+  requirements:
+    id: \d+
+    _access: 'TRUE'
+  options:
+    no_cache: 'TRUE'
+#=========================================
+comnews.redirect.fb:
+  path: '/47/{id}'
+  defaults:
+    _title: 'content'
+    _controller: '\Drupal\comnews\Controller\ComNewsController::redirectFromSNLink'
+    id: '0'
+  requirements:
+    id: \d+
+    _access: 'TRUE'
+  options:
+    no_cache: 'TRUE'
+#=========================================
+comnews.decontentpage:
+  path: '/digital-economy/content/{id}/{s1}/{s2}/{s3}/{s4}/{s5}/{s6}/{s7}/{s8}/{s9}'
+  defaults:
+    _title: 'content'
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderDENode'
+    id: '0'
+    s1: '' 
+    s2: ''
+    s3: ''
+    s4: ''
+    s5: ''
+    s6: ''
+    s7: ''
+    s8: ''
+    s9: ''
+  requirements:
+    id: \d+
+    _access: 'TRUE'
+  options:
+    no_cache: 'TRUE'
+#=========================================
+comnews.decontentnode:
+  path: '/digital-economy/node/{id}/{s1}/{s2}/{s3}/{s4}/{s5}/{s6}/{s7}/{s8}/{s9}'
+  defaults:
+    _title: 'content'
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderDENode'
+    id: '0'
+    s1: '' 
+    s2: ''
+    s3: ''
+    s4: ''
+    s5: ''
+    s6: ''
+    s7: ''
+    s8: ''
+    s9: ''
+  requirements:
+    id: \d+
+    _access: 'TRUE'
+  options:
+    no_cache: 'TRUE'        
+#=========================================    
+comnews.comments:
+  path: '/comments/{id}/{mode}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderComments'
+    id: '0'
+    mode: ''
+  requirements:
+    id: \d+
+    _access: 'TRUE'
+  options:
+    no_cache: 'TRUE'
+#=========================================    
+comnews.comments.last:
+  path: '/comments/last/{qnt}'
+  defaults:
+    qnt: '5'
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderLastComments'
+  requirements:
+    qnt: \d+
+    _access: 'TRUE'
+  options:
+    no_cache: 'TRUE'
+#=========================================
+comnews.arhiv.calendar:
+  path: '/arhiv/calendar/{date}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderCalendar'
+    date: ''
+  requirements:
+    _access: 'TRUE'    
+#=========================================
+comnews.arhiv:
+  path: '/arhiv/{mode}/{misc}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderArhiv'
+    mode: 'news'
+    misc: ''
+  requirements:
+    _access: 'TRUE'
+#=========================================    
+comnews.arhiv.de:
+  path: '/digital-economy/arhiv/{mode}/{misc}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderDEArhiv'
+    mode: 'news'
+    misc: ''
+  requirements:
+    _access: 'TRUE'    
+#=========================================
+comnews.polls:
+  path: '/polls/{misc}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderPolls'
+    misc: ''
+  requirements:
+    _access: 'TRUE' 
+#=========================================
+comnews.exhibitions:
+  path: '/exhibitions/{misc}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderExhibitions'
+    misc: ''
+  requirements:
+    _access: 'TRUE' 
+#=========================================
+comnews.exhibition:
+  path: '/exhibition/{id}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderExhibition'
+    id: ''
+  requirements:
+    _access: 'TRUE'            
+#=========================================    
+comnews.test:
+  path: '/test'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderTest'
+  requirements:
+    _role: 'administrator'   
+#=========================================    
+comnews.standart:
+  path: '/standart'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStandartHP'
+  requirements:
+    _access: 'TRUE'        
+#=========================================    
+comnews.standart.oldissue:
+  path: '/standart/issue/{oldid}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStandartOldIssue'
+    oldid: '0'
+  requirements:
+    oldid: \d+
+    _access: 'TRUE'
+#=========================================    
+comnews.standart.oldarticle:
+  path: '/standart/article/{id}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStandartOldArticle'
+    id: '0'
+  requirements:
+    id: \d+
+    _access: 'TRUE'       
+#=========================================??????????    
+#comnews.standart.issue:
+#  path: '/standart/{num}'
+#  defaults:
+#    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStandartIssue'
+#    num: ''
+#  requirements:
+#    _access: 'TRUE'
+#=========================================    
+comnews.standart.arhiv:
+  path: '/standart/arhiv'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStandartArhiv'
+  requirements:
+    _access: 'TRUE'    
+#=========================================    
+comnews.authors:
+  path: '/authors'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderAuthors'
+  requirements:
+    _access: 'TRUE'        
+#=========================================    
+comnews.authors.bio:
+  path: '/authors/bio/{tid}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderAuthorBio'
+    tid: ''
+  requirements:
+    _access: 'TRUE'
+#=========================================    
+comnews.authors.articles:
+  path: '/authors/articles/{tid}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderAuthorArticles'
+    tid: ''
+  requirements:
+    _access: 'TRUE'
+#=========================================    
+comnews.authors.editorials:
+  path: '/authors/editorials/{tid}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderAuthorEditorials'
+    tid: ''
+  requirements:
+    _access: 'TRUE'
+#=========================================    
+comnews.authors.arhiv_articles:
+  path: '/authors/articles/arhiv/{tid}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderAuthorArhivArticles'
+    tid: ''
+  requirements:
+    _access: 'TRUE'
+#=========================================    
+comnews.authors.arhiv_editorials:
+  path: '/authors/editorials/arhiv/{tid}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderAuthorArhivEditorials'
+    tid: ''
+  requirements:
+    _access: 'TRUE' 
+#=========================================    
+comnews.mainpage.de:
+  path: '/digital-economy'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderDEMainPage'
+  requirements:
+    _access: 'TRUE' 
+#=========================================    
+comnews.decompanies:
+  path: '/digital-economy/companies/{mode}' 
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderDECompanies'
+    mode: ''
+  requirements:
+    _access: 'TRUE'     
+#=========================================    
+comnews.awards.y2018:
+  path: '/digital-economy/awards/2018/{folder}/{industry}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderAwards2018'
+    folder: ''
+    industry: ''
+  requirements:
+    _access: 'TRUE' 
+#=========================================    
+comnews.tricolor2019:
+  path: '/tricolor2019/{folder}/{page}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderTricolor2019'
+    folder: ''
+    page: ''
+  requirements:
+    _access: 'TRUE'    
+#=========================================    
+comnews.tricolor:
+  path: '/tricolor/{folder}/{page}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderTricolor2019'
+    folder: ''
+    page: ''
+  requirements:
+    _access: 'TRUE'
+#=========================================    
+comnews.megafon.cloud2020:
+  path: '/projects/megafon-cloud'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::rendermegafonCloud2020'
+  requirements:
+    _access: 'TRUE'   
+#=========================================    
+comnews.starlink:
+  path: '/projects/encyclopedia-starlink'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStarlink'
+  requirements:
+    _access: 'TRUE'                  
+#=========================================    
+comnews.mainpage:
+  path: '/main'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderMainPage'
+  requirements:
+    _access: 'TRUE' 
+#=========================================    
+comnews.reviews.review-04-2020:
+  path: '/reviews/review-04-2020'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderReview042020'
+  requirements:
+    _access: 'TRUE'
+#=========================================    
+comnews.reviews:
+  path: '/reviews/{review}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderReview'
+    review: ''
+  requirements:
+    _access: 'TRUE'
+#=========================================    
+comnews.vision:
+  path: '/vision'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderVision'
+  requirements:
+    _access: 'TRUE' 
+#=========================================    
+comnews.vision.issues:
+  path: '/vision/issues'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderVisionIssues'
+  requirements:
+    _access: 'TRUE'                 
+#=========================================    
+comnews.vision.issue:
+  path: '/vision/{issue}/{dump}/{block}'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderVisionIssue'
+    issue: ''
+    dump: ''
+    block: ''
+  requirements:
+    _access: 'TRUE'
+#=========================================    
+comnews.searchpage:
+  path: '/search'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderSearchPage'
+  requirements:
+    _access: 'TRUE'      
+#=========================================    
+comnews.payment.ru:
+  path: '/oplata'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderPaymentForm'
+  requirements:
+    _access: 'TRUE'     
+#=========================================    
+comnews.payment.en:
+  path: '/oplata/en'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderPaymentFormEn'
+  requirements:
+    _access: 'TRUE'     
+#=========================================    
+comnews.subscription.standart:
+  path: '/standart/subscription/form'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderSubscriptionForm'
+  requirements:
+    _access: 'TRUE'   
+#=========================================    
+comnews.standart.pdf:
+  path: '/standart/pdf'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStandartPDFForm'
+  requirements:
+    _access: 'TRUE'      
+#=========================================    
+comnews.standart.buypdf1:
+  path: '/standart/buy_pdf_online'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStandartBuyPDFForm'
+  requirements:
+    _access: 'TRUE'
+#=========================================    
+comnews.standart.buypdf2:
+  path: '/standart/buy-pdf-online'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStandartBuyPDFForm'
+  requirements:
+    _access: 'TRUE'      
+#=========================================    
+comnews.standart.buypaper1:
+  path: '/standart/buy_online'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStandartBuyPaperForm'
+  requirements:
+    _access: 'TRUE'
+#=========================================    
+comnews.standart.buypaper2:
+  path: '/standart/buy-online'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStandartBuyPaperForm'
+  requirements:
+    _access: 'TRUE'         
+#=========================================    
+comnews.standart.freepdf:
+  path: '/standart/download-free-pdf'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStandartFreePDF'
+  requirements:
+    _access: 'TRUE'  
+#=========================================    
+comnews.standart.posters:
+  path: '/standart/posters'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderStandartPosters'
+  requirements:
+    _access: 'TRUE'      
+#=========================================    
+comnews.top2019:
+  path: '/top2019'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderTop2019'
+  requirements:
+    _access: 'TRUE'          
+#=========================================    
+comnews.admpage:
+  path: '/adm'
+  defaults:
+    _controller: '\Drupal\comnews\Controller\ComNewsController::renderAdmPage'
+  requirements:
+    _access: 'TRUE'                

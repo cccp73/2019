@@ -1,0 +1,199 @@
+<link href="https://api-maps.yandex.ru/1.1.21/_YMaps.css" rel="stylesheet" type="text/css" />
+<link href="https://api-maps.yandex.ru/modules/1.1/traffic/_YMapsTraffic.css?v=1.1-11.1" rel="stylesheet" type="text/css" />
+<style>
+#YM-msk,#YM-spb {
+    height: 550px;
+    width: 550px;
+}
+
+</style>
+<script charset="utf-8" src="https://api-maps.yandex.ru/1.1/index.xml?key=ABxtCk8BAAAAO6E2DgIAV778bmpXME0B2dMmbH0om4hO23sAAAAAAAAAAADibaOp4XFX94IjsXBw3NhCk5BjHA==&modules=traffic~router-editor" type="text/javascript"></script>
+<script type="text/javascript">
+(function ($) {
+$(function () {
+var map = new YMaps.Map(document.getElementById("YM-msk"));
+map.setCenter(new YMaps.GeoPoint(37.659,55.785), 15);
+
+map.addControl(new YMaps.TypeControl([YMaps.MapType.MAP, YMaps.MapType.SATELLITE, YMaps.MapType.HYBRID], [0,1,2])); // Карта Спутник Гибрид
+map.addControl(new YMaps.ToolBar()); // Три кнопки сверху слева
+map.addControl(new YMaps.Zoom({noTips:true})); // Масштаб
+map.addControl(new YMaps.ScaleLine()); // Шкала расстояния (снизу справа)
+map.enableHotKeys(); // Задействовать стрелки и кнопки плюс-минус
+map.enableScrollZoom(); // Задействовать скролл
+
+
+var routerModel = new YMaps.RouterEditor.RouterModel();
+var editor = new YMaps.RouterEditor.DragAndDropEditor(routerModel);
+var traffic = new YMaps.Traffic.Control();
+
+
+var toolbar = new YMaps.ToolBar();
+var button = new YMaps.ToolBarRadioButton(YMaps.ToolBar.DEFAULT_GROUP, {icon:"https://www.comnews.ru/favicon.ico",hint:"Проложить маршрут от выбранной точки до Московского офиса"});
+toolbar.add(button);
+map.addControl(toolbar);
+
+YMaps.Events.observe(button, button.Events.Deselect, function () {
+editor.startDrawing();
+map.enableDblClickZoom();
+map.removeControl(editor);
+map.removeControl(traffic);
+document.getElementById("mapinfo-msk").innerHTML='';
+});
+
+
+var myEventListener = YMaps.Events.observe(map, map.Events.Click, function (map, mEvent) {
+
+if (button.isSelected()) {
+
+editor.startDrawing();
+map.disableDblClickZoom();
+map.removeControl(editor);
+map.removeControl(traffic);
+
+routerModel.getRouteProvider().route({wayPoints:[mEvent.getGeoPoint(), new YMaps.GeoPoint(37.659326,55.785118)]}, function (rr) {routerModel.setRouterResult(rr);});
+
+YMaps.Events.observe(routerModel, routerModel.Events.RouterResultChange, function (rr) {
+helper = new YMaps.RouterEditor.RouterResultHelper(rr);
+if (helper.getDistance()) {document.getElementById("mapinfo-msk").innerHTML = ( 'Протяженность маршрута составляет ' + YMaps.humanDistance(helper.getDistance()) + '.<br />Движение по маршруту, без учета пробок, займет около ' + YMaps.humanDuration(helper.getDuration()) );} else {document.getElementById("mapinfo-msk").innerHTML='Проложить маршрут невозможно.';};
+});
+
+map.addControl(editor);
+map.addControl(traffic);
+editor.stopDrawing();
+
+};
+
+}, this);
+
+// Стиль контура
+var maison = new YMaps.Style();
+maison.polygonStyle = new YMaps.PolygonStyle();
+maison.polygonStyle.fill = true;
+maison.polygonStyle.outline = true;
+maison.polygonStyle.strokeWidth = 2;
+maison.polygonStyle.strokeColor = "303e50";
+maison.polygonStyle.fillColor = "ff000099";
+
+// Контур Ъ
+var polygon = new YMaps.Polygon(
+[new YMaps.GeoPoint(37.659326,55.785118),
+ new YMaps.GeoPoint(37.659426,55.785118),
+ new YMaps.GeoPoint(37.659426,55.785218),
+ new YMaps.GeoPoint(37.659326,55.785218)],
+{style:"polygon#ER",hasHint:1,hasBalloon:1,zIndex:900});
+polygon.setStyle(maison);
+polygon.name = "<img src='https://www.comnews.ru/favicon.ico' width='16' height='16' border='0' alt='' /><span style='margin-left:5px;top:0px;position:relative;'>Московский офис ComNews</span>";
+polygon.description = "<span style='margin-left:0.65em;'><nobr>Москва, Верхняя Красносельская ул., д. 2/1, строение 1</nobr></span><br /><span style='margin-left:0.65em;'><nobr>Телефон: +7 495 933 5483, +7 495 677 9230</nobr></span>";
+map.addOverlay(polygon);
+
+// Логотип Ъ
+var er_logo = new YMaps.Style();
+er_logo.iconStyle = new YMaps.IconStyle();
+er_logo.iconStyle.offset = new YMaps.Point(-8, -8);
+er_logo.iconStyle.size = new YMaps.Point(16, 16);
+er_logo.iconStyle.href = "https://www.comnews.ru/favicon.ico";
+var er = new YMaps.Placemark(new YMaps.GeoPoint(37.659326,55.785118), {style:er_logo, zIndex:900});
+er.name = polygon.name;
+er.description = polygon.description;
+map.addOverlay(er);
+er.openBalloon();
+});
+}(jQuery));
+</script>
+
+<script type="text/javascript">
+(function ($) {
+$(function () {
+var map = new YMaps.Map(document.getElementById("YM-spb"));
+map.setCenter(new YMaps.GeoPoint(30.318,59.919), 14);
+
+map.addControl(new YMaps.TypeControl([YMaps.MapType.MAP, YMaps.MapType.SATELLITE, YMaps.MapType.HYBRID], [0,1,2])); // Карта Спутник Гибрид
+map.addControl(new YMaps.ToolBar()); // Три кнопки сверху слева
+map.addControl(new YMaps.Zoom({noTips:true})); // Масштаб
+map.addControl(new YMaps.ScaleLine()); // Шкала расстояния (снизу справа)
+map.enableHotKeys(); // Задействовать стрелки и кнопки плюс-минус
+map.enableScrollZoom(); // Задействовать скролл
+
+
+var routerModel = new YMaps.RouterEditor.RouterModel();
+var editor = new YMaps.RouterEditor.DragAndDropEditor(routerModel);
+var traffic = new YMaps.Traffic.Control();
+
+
+var toolbar = new YMaps.ToolBar();
+var button = new YMaps.ToolBarRadioButton(YMaps.ToolBar.DEFAULT_GROUP, {icon:"https://www.comnews.ru/favicon.ico",hint:"Проложить маршрут от выбранной точки до Петербургского офиса"});
+toolbar.add(button);
+map.addControl(toolbar);
+
+YMaps.Events.observe(button, button.Events.Deselect, function () {
+editor.startDrawing();
+map.enableDblClickZoom();
+map.removeControl(editor);
+map.removeControl(traffic);
+document.getElementById("mapinfo-spb").innerHTML='';
+});
+
+
+var myEventListener = YMaps.Events.observe(map, map.Events.Click, function (map, mEvent) {
+
+if (button.isSelected()) {
+
+editor.startDrawing();
+map.disableDblClickZoom();
+map.removeControl(editor);
+map.removeControl(traffic);
+
+routerModel.getRouteProvider().route({wayPoints:[mEvent.getGeoPoint(), new YMaps.GeoPoint(30.318280,59.919781)]}, function (rr) {routerModel.setRouterResult(rr);});
+
+YMaps.Events.observe(routerModel, routerModel.Events.RouterResultChange, function (rr) {
+helper = new YMaps.RouterEditor.RouterResultHelper(rr);
+if (helper.getDistance()) {document.getElementById("mapinfo-spb").innerHTML = ( 'Протяженность маршрута составляет ' + YMaps.humanDistance(helper.getDistance()) + '.<br />Движение по маршруту, без учета пробок, займет около ' + YMaps.humanDuration(helper.getDuration()) );} else {document.getElementById("mapinfo-spb").innerHTML='Проложить маршрут невозможно.';};
+});
+
+map.addControl(editor);
+map.addControl(traffic);
+editor.stopDrawing();
+
+};
+
+}, this);
+
+
+
+
+// Стиль контура
+var maison = new YMaps.Style();
+maison.polygonStyle = new YMaps.PolygonStyle();
+maison.polygonStyle.fill = true;
+maison.polygonStyle.outline = true;
+maison.polygonStyle.strokeWidth = 2;
+maison.polygonStyle.strokeColor = "303e50";
+maison.polygonStyle.fillColor = "ff000099";
+
+// Контур 
+var polygon = new YMaps.Polygon(
+[new YMaps.GeoPoint(30.318280,59.919781),
+ new YMaps.GeoPoint(30.318280,59.919881),
+ new YMaps.GeoPoint(30.318380,59.919881),
+ new YMaps.GeoPoint(30.318380,59.919781)],
+{style:"polygon#ER",hasHint:1,hasBalloon:1,zIndex:900});
+polygon.setStyle(maison);
+polygon.name = "<img src='https://www.comnews.ru/favicon.ico' width='16' height='16' border='0' alt='' /><span style='margin-left:5px;top:0px;position:relative;'>Петербургский офис ComNews</span>";
+polygon.description = "<span style='margin-left:0.65em;'><nobr>Санкт-Петербург, Московский пр., 22, литера Л, помещение 34Н</nobr></span><br /><span style='margin-left:0.65em;'><nobr>Тел.: +7 812 670 2030</nobr></span>";
+map.addOverlay(polygon);
+
+// Логотип 
+var er_logo = new YMaps.Style();
+er_logo.iconStyle = new YMaps.IconStyle();
+er_logo.iconStyle.offset = new YMaps.Point(-8, -8);
+er_logo.iconStyle.size = new YMaps.Point(16, 16);
+er_logo.iconStyle.href = "https://www.comnews.ru/favicon.ico";
+var er = new YMaps.Placemark(new YMaps.GeoPoint(30.318280,59.919781), {style:er_logo, zIndex:900});
+er.name = polygon.name;
+er.description = polygon.description;
+map.addOverlay(er);
+er.openBalloon();
+});
+}(jQuery));
+</script>
+<div id="maps"><div id="y-m-msk"><div id="YM-msk"></div><div id="mapinfo-msk"></div></div><div id="y-m-spb"><div id="YM-spb"></div><div id="mapinfo-spb"></div></div></div>

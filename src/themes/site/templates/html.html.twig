@@ -1,0 +1,116 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display the basic html structure of a single
+ * Drupal page.
+ *
+ * Variables:
+ * - $css: An array of CSS files for the current page.
+ * - $language: (object) The language the site is being displayed in.
+ *   $language->language contains its textual representation.
+ *   $language->dir contains the language direction. It will either be 'ltr' or
+ *   'rtl'.
+ * - $rdf_namespaces: All the RDF namespace prefixes used in the HTML document.
+ * - $grddl_profile: A GRDDL profile allowing agents to extract the RDF data.
+ * - $head_title: A modified version of the page title, for use in the TITLE
+ *   tag.
+ * - $head_title_array: (array) An associative array containing the string parts
+ *   that were used to generate the $head_title variable, already prepared to be
+ *   output as TITLE tag. The key/value pairs may contain one or more of the
+ *   following, depending on conditions:
+ *   - title: The title of the current page, if any.
+ *   - name: The name of the site.
+ *   - slogan: The slogan of the site, if any, and if there is no title.
+ * - $head: Markup for the HEAD section (including meta tags, keyword tags, and
+ *   so on).
+ * - $styles: Style tags necessary to import all CSS files for the page.
+ * - $scripts: Script tags necessary to load the JavaScript files and settings
+ *   for the page.
+ * - $page_top: Initial markup from any modules that have altered the
+ *   page. This variable should always be output first, before all other dynamic
+ *   content.
+ * - $page: The rendered page content.
+ * - $page_bottom: Final closing markup from any modules that have altered the
+ *   page. This variable should always be output last, after all other dynamic
+ *   content.
+ * - $classes String of classes that can be used to style contextually through
+ *   CSS.
+ *
+ * @ingroup templates
+ *
+ * @see bootstrap_preprocess_html()
+ * @see template_preprocess()
+ * @see template_preprocess_html()
+ * @see template_process()
+ */
+#}
+{%
+  set body_classes = [
+    logged_in ? 'user-logged-in',
+    not root_path ? 'path-frontpage' : 'path-' ~ root_path|clean_class,
+    node_type ? 'page-node-type-' ~ node_type|clean_class,
+    db_offline ? 'db-offline',
+    theme.settings.navbar_position ? 'navbar-is-' ~ theme.settings.navbar_position,
+    theme.has_glyphicons ? 'has-glyphicons',
+    path_classes ? path_classes,
+  ]
+%}
+<!DOCTYPE html>
+<html {{ html_attributes }}>
+  <head>
+  <!-- -->
+    <head-placeholder token="{{ placeholder_token|raw }}">
+  <!-- -->  
+    <title>{{ head_title|safe_join(' | ') }}</title>
+    <meta name="yandex-verification" content="5a2db7766b2608cf">
+    <meta name="robots" content="NOODP">
+    <meta name="robots" content="NOYACA">
+    <meta name="google-site-verification" content="1OX3WFlsJ_XCGEUlXBGyiVKLgOqi1y8_DOW_vRlnLvQ">
+  <!-- 1-->
+  {{ cn_meta_tags()|raw }}
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!-- 2-->  
+    <css-placeholder token="{{ placeholder_token|raw }}">
+    <js-placeholder token="{{ placeholder_token|raw }}">
+    
+      
+      <link href="/themes/site/css/lightbox.css" rel="stylesheet" />
+      <link href="/themes/site/js/slick/slick.css" rel="stylesheet" />  
+      <script src="/themes/site/js/adriver.core.2.js"></script>
+      <link rel="stylesheet" href="/themes/site/css/jquery.countdown.css" />
+      
+      {{ cn_mobileCSS()|raw }}  
+
+  </head>
+  <body{{ attributes.addClass(body_classes) }}>
+    
+    <a href="#main-content" class="visually-hidden focusable skip-link">
+      {{ 'Skip to main content'|t }}
+    </a>
+    {{ page_top }}
+    {{ page }}
+    {{ page_bottom }}
+    
+    <js-bottom-placeholder token="{{ placeholder_token|raw }}">
+    <script src="/themes/site/js/lightbox-2.6.min.js"></script>
+    <script src="/themes/site/js/slick/slick.min.js"></script>
+    <script src="/themes/site/js/jquery.cookie.js"></script>
+    <!-- BEGIN Tynt Script -->
+    <script type="text/javascript">
+    if(document.location.protocol=='http:'){
+    var Tynt=Tynt||[];Tynt.push('dDoVTQkZOr44S-acwqm_6r');
+    (function(){var s=document.createElement('script');s.async="async";s.type="text/javascript";s.src='http://tcr.tynt.com/ti.js';var h=document.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);})();
+    }
+    </script>
+    <!-- END Tynt Script -->
+    <!-- Begin Mailigen Signup Form: lightbox -->
+    <script class="MG_embed" src="//list.mailigen.com/js/embed.js"  defer></script>
+    <!-- End Mailigen Signup Form: lightbox -->
+    <script src="/themes/site/js/jquery.countdown.js"></script>
+    {{ cn_render_hidden_banners()|raw}}
+  <img src="/img/3/cross.png" id="cross" style="display:none; position:absolute; opacity:0.4; z-index:9999;" border="0"/>
+  {{ cn_mobile_menu()|raw}}
+  <div id="go-top" onclick="jQuery('#top').focus().blur();" style="display: none;">∧</div>
+  <div id="switchVersions" style="display: none;">[===]</div>
+  </body>
+</html>

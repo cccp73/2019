@@ -1,0 +1,3566 @@
+<?php
+
+/**
+ * @file
+ */
+
+global $tags; $tags = array(); 
+global $detags; $detags = array(); 
+global $hidden_banners; $hidden_banners = array();
+global $showallbanners; $showallbanners = cn_getVal($_COOKIE['showallbanners']);
+global $excluded_banners; $excluded_banners = array();
+global $custom_header; $custom_header = '';
+global $custom_footer; $custom_footer = '';
+global $custom_sidebar; $custom_sidebar = '';
+define('BLOCK_IMAGE_STYLE','large');
+
+if(isset($_GET['showallbanners'])){
+    $expires = ini_get('session.cookie_lifetime');
+    $expires = (!empty($expires) && is_numeric($expires)) ?  \Drupal::time()->getRequestTime() + (int)$expires : 0;
+    setcookie('showallbanners', intval($_GET['showallbanners']), $expires, ini_get('session.cookie_path'), ini_get('session.cookie_domain'), ini_get('session.cookie_secure') == '1');
+    $showallbanners = intval($_GET['showallbanners']);
+}
+
+
+
+
+function cn_isWorkday($date,$time=''){
+	if ($date == '') $date = time();
+	$workdays = array();
+	$holydays = array();
+
+	$workdays['2012-01-09'] = true;	$workdays['2012-03-11'] = true;	$workdays['2012-04-28'] = true;	$workdays['2012-06-09'] = true;	$workdays['2012-05-05'] = true;	$workdays['2012-05-12'] = true;	$workdays['2016-02-20'] = true;	$holydays['2012-01-01'] = true;	$holydays['2012-02-23'] = true;	$holydays['2012-01-01'] = true;	$holydays['2012-03-08'] = true;	$holydays['2012-03-09'] = true;		$holydays['2012-04-30'] = true;	$holydays['2012-05-01'] = true;	$holydays['2012-05-07'] = true;	$holydays['2012-05-08'] = true;	$holydays['2012-05-09'] = true;	$holydays['2012-06-11'] = true;	$holydays['2012-06-12'] = true;	$holydays['2012-11-05'] = true;	
+	$holydays['2012-12-27'] = true;	$holydays['2012-12-28'] = true;	$holydays['2012-12-29'] = true;	$holydays['2012-12-30'] = true;	$holydays['2012-12-31'] = true;	$holydays['2012-07-20'] = true;	$holydays['2013-01-01'] = true;	$holydays['2013-01-02'] = true;	$holydays['2013-01-03'] = true;	$holydays['2013-01-04'] = true;	$holydays['2013-01-05'] = true;	$holydays['2013-01-06'] = true;
+	$holydays['2013-01-07'] = true;	$holydays['2013-01-08'] = true;	$holydays['2013-05-01'] = true;	$holydays['2013-05-02'] = true;	$holydays['2013-05-03'] = true;	$holydays['2013-05-09'] = true;	$holydays['2013-05-10'] = true;	$holydays['2013-03-08'] = true;	$holydays['2013-11-04'] = true;	$holydays['2013-06-12'] = true;	$holydays['2013-11-04'] = true;	$holydays['2013-12-30'] = true;
+	$holydays['2013-12-31'] = true;	$holydays['2014-01-01'] = true;	$holydays['2014-01-02'] = true;	$holydays['2014-01-03'] = true;
+	$holydays['2014-01-06'] = true;	$holydays['2014-01-07'] = true;	$holydays['2014-01-08'] = true;	$holydays['2014-01-09'] = true;
+	$holydays['2014-01-10'] = true;	$holydays['2014-05-01'] = true;	$holydays['2014-05-02'] = true;	$holydays['2014-05-09'] = true;
+	$holydays['2014-06-12'] = true;	$holydays['2014-06-13'] = true;	$holydays['2014-03-10'] = true;	$holydays['2014-07-11'] = true;
+	$holydays['2014-11-03'] = true;	$holydays['2014-11-04'] = true;	$holydays['2014-12-29'] = true;	$holydays['2014-12-30'] = true;
+	$holydays['2014-12-31'] = true;	$holydays['2015-01-01'] = true;	$holydays['2015-01-02'] = true;	$holydays['2015-01-05'] = true;
+	$holydays['2015-01-06'] = true;	$holydays['2015-01-07'] = true;	$holydays['2015-01-08'] = true;	$holydays['2015-01-09'] = true;
+	$holydays['2015-02-23'] = true;	$holydays['2015-03-09'] = true;	$holydays['2015-05-01'] = true;	$holydays['2015-05-04'] = true;
+	$holydays['2015-05-11'] = true;	$holydays['2015-06-12'] = true;	$holydays['2015-11-04'] = true;	$holydays['2015-12-29'] = true;
+	$holydays['2015-12-30'] = true;	$holydays['2015-12-31'] = true;	$holydays['2016-01-01'] = true;	$holydays['2016-01-04'] = true;
+	$holydays['2016-01-05'] = true;	$holydays['2016-01-06'] = true;	$holydays['2016-01-07'] = true;	$holydays['2016-01-08'] = true;	$holydays['2016-02-22'] = true;	$holydays['2016-02-23'] = true;	$holydays['2016-03-07'] = true;	$holydays['2016-03-08'] = true;
+	$holydays['2016-05-02'] = true;	$holydays['2016-05-03'] = true;	$holydays['2016-05-09'] = true;	$holydays['2016-06-13'] = true;	
+	$holydays['2016-07-15'] = true;	$holydays['2016-11-04'] = true;	$holydays['2016-12-29'] = true;	$holydays['2016-12-30'] = true; 
+	$holydays['2017-01-02'] = true;	$holydays['2017-01-03'] = true;	$holydays['2017-01-04'] = true;	$holydays['2017-01-05'] = true;
+	$holydays['2017-01-06'] = true;	$holydays['2017-02-23'] = true;	$holydays['2017-02-24'] = true;	$holydays['2017-03-08'] = true;
+	$holydays['2017-05-01'] = true;	$holydays['2017-05-08'] = true;	$holydays['2017-05-09'] = true;	$holydays['2017-06-12'] = true;
+	$holydays['2017-07-13'] = true;	$holydays['2017-07-14'] = true;	$holydays['2017-11-06'] = true;	$holydays['2017-12-29'] = true;
+	$holydays['2017-12-30'] = true;	$holydays['2017-12-31'] = true;	$holydays['2018-01-01'] = true;	$holydays['2018-01-02'] = true;
+	$holydays['2018-01-03'] = true;	$holydays['2018-01-04'] = true;	$holydays['2018-01-05'] = true;	$holydays['2018-01-06'] = true;
+	$holydays['2018-01-07'] = true;	$holydays['2018-01-08'] = true;	$holydays['2018-02-23'] = true;	$holydays['2018-03-08'] = true;
+	$holydays['2018-03-09'] = true; $workdays['2018-04-28'] = true; $holydays['2018-04-30'] = true;	$holydays['2018-05-01'] = true;
+    $holydays['2018-05-02'] = true;	$holydays['2018-05-03'] = true; $holydays['2018-05-04'] = true;	$holydays['2018-05-09'] = true;
+	$holydays['2018-06-11'] = true;	$holydays['2018-06-12'] = true;	$workdays['2018-06-09'] = true; $holydays['2018-11-05'] = true;
+	$holydays['2018-12-07'] = true;	$holydays['2018-12-25'] = true;	$holydays['2018-12-26'] = true;	$holydays['2018-12-27'] = true;
+	$holydays['2018-12-28'] = true;	$holydays['2018-12-31'] = true;	$holydays['2019-01-01'] = true;	$holydays['2019-01-02'] = true;
+	$holydays['2019-01-03'] = true;	$holydays['2019-01-04'] = true;	$holydays['2019-01-07'] = true;	$holydays['2019-01-08'] = true;
+	$holydays['2019-03-08'] = true;	$holydays['2019-05-01'] = true;	$holydays['2019-05-02'] = true;	$holydays['2019-05-03'] = true;
+	$holydays['2019-05-06'] = true;	$holydays['2019-05-07'] = true;	$holydays['2019-05-08'] = true;	$holydays['2019-05-09'] = true;
+	$holydays['2019-05-10'] = true;
+    $holydays['2019-06-12'] = true;
+    $holydays['2019-11-04'] = true;
+    $holydays['2020-02-24'] = true;$holydays['2020-03-09'] = true;
+    
+
+	$dow = date('w',$date);
+	if ($dow == 0) $dow = 7;
+	//cn_d($dow);
+	if ($time =='')
+ 		return cn_getVal($workdays[date('Y-m-d',$date)]) || ($dow < 6 && !cn_getVal($holydays[date('Y-m-d',$date)]));	
+	else {
+		$yestoday = strtotime(date('Y-m-d',$date).' -1 day');
+												 
+		return (cn_isWorkday($yestoday) && cn_isWorkday()) || (!cn_isWorkday($yestoday) && cn_isWorkday() && time()>= strtotime('today '.$time));
+	}
+}
+
+
+/** BANNERS ****************************************** */
+
+// All Banner sites
+global $banner_sites; $banner_sites = null;
+// All banners
+global $banners; $banners = null;
+
+function cn_initAllBannerSites(){
+    $all = array();
+    $ids = array();
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('banner_sites', $parent = 0, $max_depth = 1, $load_entities = TRUE);
+    foreach($terms as $term){
+      if(!in_array($term->id(), array(0)) && $term->field_bn_active->value){
+        $bs = array();
+        $bs['id'] = $term->id();
+        $bs['bn_id'] = $term->field_bn_id->value;
+        $bs['name'] = $term->name->value;
+        $bs['width'] = $term->field_bn_width->value;
+        $bs['type'] = $term->field_bn_type->value;
+        $bs['scope'] = $term->field_bn_scope->value;
+        $bs['default'] = intval($term->field_bn_default_banner->target_id);
+        $bs['banners'] = array();
+        $ids[$bs['id']] = $bs['bn_id'];
+        $all[$term->field_bn_id->value] = $bs;
+      }
+    }
+    $all['ids'] = $ids;
+    return $all;
+}
+function cn_getAllBannerSites(){
+    global $banner_sites;
+    if($banner_sites === null){
+        return cn_initBannerCache('sites');
+    }
+    return $banner_sites;
+}
+function cn_setAllBannerSites($bs){
+    global $banner_sites;
+    $banner_sites = $bs;
+    return $banner_sites;
+}
+function cn_getAllBanners(){
+    global $banners;
+    if($banners === null){
+        return cn_initBannerCache('banners');
+    }
+    return $banners;
+}
+function cn_setAllBanners($bs){
+    global $banners;
+    $banners = $bs;
+    return $banners;
+}
+
+function cn_bnScope(){
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url[0]));
+    $url = explode('/',$url[0]);
+    if(cn_getVal($url[1]) == 'digital-economy' && cn_getVal($url[2]) != '') return 'de-all';
+    if(cn_getVal($url[1]) == 'digital-economy' && cn_getVal($url[2]) == '') return 'de-hp';
+    if(cn_getVal($url[1]) == ''                || cn_getVal($url[1]) == 'main' || cn_getVal($url[1]) == 'top2019') return 'comnews-hp';
+
+    return 'comnews-all';
+}
+
+function cn_userLoginLog(){
+    
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url[0]));
+    $url = explode('/',$url[0]);
+    if(cn_getVal($url[1]) == 'user' && cn_getVal($url[2]) == 'login' && count($_POST)){
+        \Drupal::logger('comnews')->error('Login info : name = '.$_POST['name'].'; pass = '.$_POST['pass'].' | post : '.serialize($_POST), array());
+    }
+    
+}
+
+
+function cn_initBannerCache($type){
+    global $banner_sites;
+    global $banners;
+    $banner_sites = cn_initAllBannerSites();
+    $banners = cn_initAllBanners();
+    if($type == 'banners') return $banners; else return $banner_sites;
+}
+
+
+function cn_initAllBanners(){
+    
+    $all = array();
+    
+    $query = \Drupal::entityQuery('node')->condition('type', 'banner')->condition('status', 1)
+        ->condition('field_bn_start_date', cn_shortDBDate(), '<=' )
+        ->condition('field_bn_end_date', cn_shortDBDate(), '>=' )
+        ->sort('field_seq','ASC')->sort('created','DESC');
+    $nids = $query->execute();
+    //ksm(count($nids),cn_shortDBDate());
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    $allBannerSites = cn_getAllBannerSites();
+    foreach($nodes as $banner){
+        $b = array();
+        $b['title'] = $banner->title->value;
+        $b['id'] = $banner->id();
+        $b['sites'] = array();
+        foreach($banner->field_bn_sites->getValue() as $site){
+            $allBannerSites[$allBannerSites['ids'][$site['target_id']]]['banners'][] = $b['id'];
+            $b['sites'][] = $allBannerSites['ids'][$site['target_id']];
+        }
+        $b['width'] = $banner->field_bn_width->value;
+        $b['height'] = $banner->field_bn_height->value;
+        $b['type'] = $banner->field_bn_type->value;
+        $b['start_date'] = $banner->field_bn_start_date->value;
+        $b['end_date'] = $banner->field_bn_end_date->value;
+        $body = $banner->field_bn_body->value;
+        if(empty($body)){
+            $body = '<a href="'.$banner->field_bn_link->uri.'" target="_blank"><img src="'.cn_getImgUrl('original',$banner->field_bn_image).'"/></a>';
+        }
+        $body = str_replace('%standart%',renderStandartBanner(true),$body);
+        $b['body'] = $body;
+        $all[$b['id']] = $b;
+    }
+    foreach($allBannerSites as $bn_id => $site){
+        if($bn_id != 'ids'){
+            if(!count($site['banners'])){
+                if(isset($all[$allBannerSites[$bn_id]['default']]))
+                    $allBannerSites[$bn_id]['banners'][] = $allBannerSites[$bn_id]['default'];
+            }
+        }
+    }
+    cn_setAllBannerSites($allBannerSites);
+    
+    return $all;
+}
+
+function cn_renderBannerSite($bn_id, $n = 0){
+    global $showallbanners;
+    global $excluded_banners;
+    $out = '';
+    if(in_array($bn_id,$excluded_banners)) return $out;
+    $allBannerSites = cn_getAllBannerSites();
+    //ksm($bn_id,$allBannerSites[$bn_id]);
+    if(isset($allBannerSites[$bn_id]) && ($allBannerSites[$bn_id]['scope'] == cn_bnScope() || $allBannerSites[$bn_id]['scope'] == 'unlimited')){
+        $site = $allBannerSites[$bn_id];
+        $allBanners = cn_getAllBanners();
+        if (cn_getVal($showallbanners) == 1 ){
+            if(cn_isAdmin()){
+                $h = '90px;';
+                if(!in_array($site['width'],array('1200px','728px'))) $h = '120px';
+                $out = '<div id="'.$bn_id.'" class="bn '.$site['type'].' admin" style="width:'.$site['width'].'; height:'.$h.';"><script> document.write("<h1>'.$site['bn_id'].'</h1><small>'.$site['name'].'</small>"); </script></div>';
+            } else {
+                $h = '90px;';
+                if(!in_array($site['width'],array('1200px','728px'))) $h = '120px';
+                if(in_array($site['width'],array('300px','360px'))) $h = '300px';
+                $out = '<div id="'.$bn_id.'" class="bn '.$site['type'].' admin" style="width:'.$site['width'].'; height:'.$h.';"><script> document.write("<h1>'.$site['bn_id'].'</h1>"); </script></div>';
+            }
+        } else
+            
+            if($n === 'all'){
+                
+                $out .= '<div id="'.$bn_id.'" class="bn bns '.$allBanners[$site['banners'][0]]['type'].'">
+                
+                
+                ';
+                foreach($site['banners'] as $banner){
+                    if(isset($allBanners[$banner])){
+                        $out .= '<div id="'.$bn_id.'-'.$banner.'" class="bn '.$allBanners[$banner]['type'].'">'.$allBanners[$banner]['body'].'</div>';
+                    }
+                }
+                $out .= '</div>';
+                
+            } else {
+                if(count($site['banners']) && isset($site['banners'][$n]) && isset($allBanners[$site['banners'][$n]])){
+                    $out = '<div id="'.$bn_id.'" class="bn '.$allBanners[$site['banners'][$n]]['type'].'">'.$allBanners[$site['banners'][$n]]['body'].'</div>';
+                }
+            }
+
+    }
+    return $out;
+}
+
+/** BANNERS ********************************************** */
+
+function cn_getVal(&$var){
+    $out = '';
+    if(isset($var)) return $var;
+    return $out;
+}
+
+/**
+ * Implements hook_cron(). Performs periodic actions.
+ */
+function comnews_cron() {
+    // Remove expired files from the cache.
+    $boost = \Drupal::service('comnews.boost');
+    $count = $boost->boost_rmdir(null, FALSE);
+    \Drupal::logger('comnews')->info('Expired %count files from static page cache.', array('%count' => intval($count)));
+}
+
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for node entities.
+ */
+function comnews_node_update($node) {
+    cn_updateSearchIndex($node);
+}
+/**
+ * Implements hook_ENTITY_TYPE_delete() for node entities.
+ */
+function comnews_node_delete($node) {
+
+    $query = \Drupal::database()->delete('a_search');
+    $query->condition('nid', $node->id());
+    $query->execute();
+    
+}
+/**
+ * Implements hook_ENTITY_TYPE_insert() for node entities.
+ */
+function comnews_node_insert($node) {
+    cn_updateSearchIndex($node);
+}
+
+
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for node entities.
+ */
+function comnews_node_presave($node) {
+    if (in_array($node->getType(), array('article'))) {
+      
+    }
+
+    $node->set('title',cn_cleanText($node->title->value));
+    if($node->field_alt_title) $node->set('field_alt_title',cn_cleanText($node->field_alt_title->value));
+    if($node->field_authors){ 
+        $values = $node->field_authors->getValue();
+        foreach($values as $key => $item){
+            $values[$key]['value'] = cn_cleanText($item['value']);
+        }
+        $node->set('field_authors', $values);
+    }
+    if($node->field_i_persons){ 
+        $values = $node->field_i_persons->getValue();
+        foreach($values as $key => $item){
+            $values[$key]['value'] = cn_cleanText($item['value']);
+        }
+        $node->set('field_i_persons', $values);
+    }
+    if($node->body){
+        
+        $preserve_quotes = stripos($node->body->value,'preserve_quotes') !== false;
+        //ksm(stripos($node->body->value,'preserve_quotes'));
+        $node->body->value = cn_cleanText($node->body->value,$preserve_quotes);
+        $node->body->summary = cn_cleanText($node->body->summary,$preserve_quotes);
+        
+    }
+    if($node->field_source) $node->set('field_source',cn_cleanText($node->field_source->value));
+    if($node->field_footer_text) $node->set('field_footer_text',cn_cleanText($node->field_footer_text->value));
+    if($node->field_image_text) $node->set('field_image_text',cn_cleanText($node->field_image_text->value));
+    if($node->field_image){
+        $node->field_image->alt = cn_cleanText($node->field_image->alt);
+        $node->field_image->title = cn_cleanText($node->field_image->title);
+    }
+    if($node->field_date){
+        // 00:00 для даты статьи 
+        $node->field_date->setValue(cn_convertDateToStorageFormat(date('Y-m-d 00:00:00',$node->field_date->date->getTimestamp())));
+    }
+    if($node->field_images){ 
+        $values = $node->field_images->getValue();
+        foreach($values as $key => $item){
+            $values[$key]['alt'] = cn_cleanText($item['alt']);
+            $values[$key]['title'] = cn_cleanText($item['title']);
+        }
+        $node->set('field_images', $values);
+    }
+}
+
+function cn_cleanText($text,$preserve_quotes = false){
+    
+    if(!$preserve_quotes) $text = str_replace(array('«','&laquo;','&raquo;','&ldquo;','&rdquo;','»','“','”'),array('"','"','"','"','"','"','"','"'),$text);
+    $text = str_replace(array('&zwnj;','&shy;','&nbsp;'),array('','',' '),$text);
+    
+    return $text;
+}
+
+
+
+
+function cn_renderHeader(){
+    $out = '';
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $url = $url[0];
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url));
+    $url = explode('/',$url);
+    
+    cn_userLoginLog();
+
+    if(isset($url[1]) && $url[1] == 'projects'){
+        $out = cn_renderCustomHeader();
+    } else if(isset($url[1]) && $url[1] == 'digital-economy'){
+        $out = cn_renderDEHeader();
+    } else if(isset($url[1]) && $url[1] == 'adm'){
+        $out = cn_renderAdmHeader();
+    } else if(isset($url[1]) && $url[1] == 'vision'){
+        $out = cn_renderVisionHeader();
+    } else if(isset($url[1]) && $url[1] == 'content' && $url[2] > 200000){
+        $node = \Drupal\node\Entity\Node::load($url[2]);
+        if($node && $node->getType() == 'review' && $node->field_vision_parent->target_id)
+            $out = cn_renderVisionHeader();
+        else 
+            $out = cn_renderComnewsHeader();    
+    } else{
+        $out = cn_renderComnewsHeader();
+    }
+
+    return $out;
+}
+
+function cn_renderMobileMenu(){
+    $out = '';
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $url = $url[0];
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url));
+    $url = explode('/',$url);
+     
+    if(isset($url[1]) && $url[1] == 'digital-economy'){
+        $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('de', $parent = 0, $max_depth = 1, $load_entities = TRUE);
+        $tags = '';
+        foreach($terms as $term){
+            if(!in_array($term->id(), array(1034,1042))){
+                $c = explode(';',$term->field_de_color->value);
+                $c = $c[1];  
+                $tags .= '<a id="dehmi-'.$term->id().'" href="/digital-economy/companies'.\Drupal::service('path.alias_manager')->getAliasByPath('/taxonomy/term/'.$term->id()).'">'.$term->name->value.'</a><style> #dehmi-'.$term->id().':after{ background-color:'.$c.'!important;}</style>';
+            }
+        }
+        $out = '
+        <div id="ham" class="mobile de">
+            <span></span>
+            <div id="menu">
+                <hr>    
+                '.$tags.'
+                <hr>
+                <a href="/digital-economy/documents">Документы</a>
+                <a href="/digital-economy/case-study">Проекты</a>
+                <a href="https://whoiswho.comnews.ru">Кто есть кто</a>
+                <a href="/digital-economy/awards/2018">Лучшие проекты 2018 года</a>
+                
+            </div>
+        </div>
+        ';
+    } else if(isset($url[1]) && $url[1] == 'adm'){
+        
+    } else{
+        $is_vision = false;
+        if(isset($url[1]) && $url[1] == 'vision'){
+            $is_vision = true;
+        } else if(isset($url[1]) && $url[1] == 'content' && $url[2] > 200000){
+            $node = \Drupal\node\Entity\Node::load($url[2]);
+            if($node && $node->getType() == 'review' && $node->field_vision_parent->target_id) $is_vision = true;
+        }    
+
+        if($is_vision){
+            $out = '';
+        } else {    
+            $out = '
+            <div id="ham" class="mobile">
+                    <span></span>
+                    <div id="menu">
+                        <hr>
+                        <a href="/digital-economy">Цифровая экономика</a>
+                        <a href="/authors">Авторы</a>
+                        <a href="/videointerviews">Видеоинтервью</a>
+                        <a href="/shortnews">В фокусе</a>
+                        <a href="/quotes">Цитата дня</a>
+                        <!--<a href="/polls">Вопрос недели</a>-->
+                        <a href="/exhibitions">Конференции / Выставки</a>
+                        <a href="https://comments.comnews.ru/cs">Форум</a>
+                        <a href="/pressreleases" style="color:#be0027;">Новости компаний</a>
+                        <a href="/covid-19">OТРАСЛЬ В ОТВЕТ НА COVID-19</a>
+                        <a href="/remote-work" style="color:#be0027; letter-spacing:-3px;">Решения для удаленной работы</a>
+                        <hr>                
+                        <a href="https://www.comnews-conferences.ru">ComNews Conferences</a>
+                        <a href="/vision" style="color:#be0027;">Vision</a>
+                        <a href="/standart">Стандарт</a>
+                        <a href="https://whoiswho.comnews.ru">Кто есть кто</a>
+                        <hr>
+                        <a href="/adv" style="color:#be0027;">Реклама</a>
+                        <a href="/about">О нас</a>
+                        <a href="/about/en">About Us</a>
+                        <a href="/about/archive">Архив проектов</a>
+                        <a href="javascript://void();" id="force-full">Полная версия сайта</a>
+                        
+                    </div>
+            </div>
+            ';
+        }
+    }
+
+    return $out;
+}
+
+
+
+function cn_renderAdmHeader(){
+    $out = '';
+
+    return $out;
+}
+
+function cn_renderAdmFooter(){
+    $out = '';
+
+    return $out;
+}
+
+function cn_dayOfWeekShort($date=null){
+	if ($date == null) $date = time();
+	$days = array("Вс","Пн","Вт","Ср","Чт","Пт","Сб","Вс"); 
+	return $days[date("w",$date)];
+}
+
+function cn_renderComnewsHeader(){
+    $out = '';
+    //banner
+    $out .= '
+    <div id="header-bnrs" class="bnrs c-container">
+    '.cn_renderBannerSite('bn0001',0).cn_renderBannerSite('bn0001a',0).cn_renderBannerSite('bn0002',0).cn_renderBannerSite('bn0002a',0).' 
+    </div>
+    ';
+    $cbr = '';
+    $cbr = file_get_contents('/var/www/comnews2019/cache/normal/cbr.txt');
+    if(!$cbr) $cbr = ''; 
+    // caption
+    $out .= '
+    <a id="top" href="/" style="display:block;"></a>
+    <div class="h-caption desktop">
+    <div class="c-container">
+        НОВОСТИ ЦИФРОВОЙ ТРАНСФОРМАЦИИ, ТЕЛЕКОММУНИКАЦИЙ, ВЕЩАНИЯ и ИТ
+        <span id="currency-rates"></span>  
+        <div class="mobile-icon-black"></div>
+        <div class="logo-rates" onclick="" style="cursor:pointer;">'.$cbr.'</div>
+        <div class="srch-panel"><form action="/search" method="get"><input name="text" type="text" placeholder="Искать текст ..." value="" class="form-control form-input" id="srch-text"/></form></div>
+        <div class="srch-icon-black"></div>
+        <a class="gray-icons fb-icon" href="https://www.facebook.com/comnewsgroup/" target="_blank">facebook</a>
+        <a class="gray-icons tg-icon" href="https://t.me/comnewsgroup" target="_blank">telegram</a>
+    </div>
+    </div>
+    <div class="h-caption mobile">
+    <div class="c-container">
+        '.date('d.m.Y').', '.cn_dayOfWeekShort() // <a class="fullversion" href="javascript:void(0);">[ полная версия ]</a>
+        .'<a class="srch-icon-black" href="/search"></a>'
+        .'<a class="gray-icons fb-icon" href="https://www.facebook.com/comnewsgroup/" target="_blank">facebook</a>
+        <a class="gray-icons tg-icon" href="https://t.me/comnewsgroup" target="_blank">telegram</a>
+    </div>
+    </div>
+    ';
+    // logo
+    $out .='
+    <div class="h-logo desktop">
+    <div class="c-container">
+        <a class="cn-h-logo" href="/"></a>
+        <!--<div class="logo-calendar"><div class="c-header">'.date('d').' '.cn_month(null,'января').' '.date('Y').' года, '.cn_dayOfWeekShort().'</div><div class="c-body"></div></div> -->
+        <a href="/arhiv/calendar" class="logo-date">'.date('d.m.Y').', '.cn_dayOfWeekShort().'</a>
+        <!--
+        <div class="srch">
+        <input type="text" id="srch-text"/><button id="srch-btn"></button>
+        </div>
+        -->
+    </div>
+    </div>
+    <div class="h-logo mobile">
+    
+        <div class="c-container">
+        <a class="cn-h-logo"  href="/"></a>
+        
+    </div>
+    </div>
+    ';
+    $parent_terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tags', $parent = 0, $max_depth = 1, $load_entities = FALSE);
+    $tags = array();
+    foreach($parent_terms as $parent){
+      if($parent->tid != 1003){
+        $tags[$parent->tid] = '<a class="l1" href="'.\Drupal::service('path.alias_manager')->getAliasByPath('/taxonomy/term/'.$parent->tid).'">'.$parent->name.'</a>';
+        $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tags', $parent->tid, 1, FALSE);
+        foreach($terms as $term){
+            $tags[$parent->tid] .= '<a class="l2" href="'.\Drupal::service('path.alias_manager')->getAliasByPath('/taxonomy/term/'.$term->tid).'">'.$term->name.'</a>';
+        }
+      }
+    }
+    $parent_terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tags', 1142, $max_depth = 1, $load_entities = FALSE);
+    foreach($parent_terms as $parent){
+      if($parent->tid != 1003){
+        $tags[$parent->tid] = '<a class="l1" href="'.\Drupal::service('path.alias_manager')->getAliasByPath('/taxonomy/term/'.$parent->tid).'">'.$parent->name.'</a>';
+        $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tags', $parent->tid, 1, FALSE);
+        foreach($terms as $term){
+            $tags[$parent->tid] .= '<a class="l2" href="'.\Drupal::service('path.alias_manager')->getAliasByPath('/taxonomy/term/'.$term->tid).'">'.$term->name.'</a>';
+        }
+      }
+    }
+    //ksm($tags);
+    // menu
+    $out .= '
+    <div class="h-menu desktop">
+    <div class="c-container">
+        <div id="tags-menu">
+        <div class="ham">
+        <span>
+        <div class="tags">
+            <div class="col c1">
+            '.$tags[1116].$tags[1127].'            
+            </div>
+            <div class="col c2">
+            '.$tags[1121].$tags[1132].'
+            </div>
+            <div class="col c3">
+            '.$tags[1136].$tags[1141].$tags[1155].'
+            </div>
+            <div class="col c4">
+             '.$tags[1143].$tags[1154].'
+            </div>
+        </div>
+        </span>
+        </div>
+        <a href="/news" style="padding-left:22px;">Новости</a>
+        </div>
+        <a href="/editorials">Редколонка</a>
+        <a href="/point-of-view">Точка зрения</a>
+        <a href="/shortnews">В фокусе</a>
+        <a href="/digital-economy">Цифровая экономика</a>
+        <a href="/vision" style="color:#be0027;">Vision</a>
+        <a href="https://whoiswho.comnews.ru">Кто есть Кто</a>
+        <a href="https://www.comnews-conferences.ru">ComNews Conferences</a>                                               
+    </div>
+    </div>
+    <div class="h-menu mobile">
+    <div class="c-container">
+        <a href="/news">Новости</a>
+        <a href="/editorials">Редколонка</a>
+        <a href="/point-of-view">Точка зрения</a>
+    </div>
+    </div>
+    '.cn_renderBannerSite('bn0008',0).cn_renderBannerSite('bn0009',0).cn_renderBannerSite('bnM0001',0).cn_renderBannerSite('bnM0002',0).' 
+    ';
+
+
+    return $out;
+}
+
+function cn_renderDEHeader(){
+    $out = '';
+    //banner
+
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('de', $parent = 0, $max_depth = 1, $load_entities = TRUE);
+    $tags = '';
+    foreach($terms as $term){
+      if(!in_array($term->id(), array(1034,1042))){
+        $c = explode(';',$term->field_de_color->value);
+        $c = $c[1];  
+        $tags .= '<a id="dehmi-'.$term->id().'" href="/digital-economy/companies'.\Drupal::service('path.alias_manager')->getAliasByPath('/taxonomy/term/'.$term->id()).'">'.$term->name->value.'</a><style> #dehmi-'.$term->id().':after{ background-color:'.$c.'!important;}</style>';
+      }
+    }
+
+    $banners = '
+    <div id="header-bnrs" class="bnrs c-container">
+    '.cn_renderBannerSite('bn0004').cn_renderBannerSite('bn0005').' 
+    </div>
+    ';
+
+    // caption
+    $out .= '
+    <a id="top" href="/" style="display:block;"></a>
+    <div class="de-h-caption desktop">
+    <div class="c-container">
+        <a class="logo" href="/"><img src="/themes/site/images/DE-comnews-top.png"/></a>
+       
+        <span id="currency-rates"></span>  
+        <a class="gray-icons fb-icon" href="https://www.facebook.com/comnewsgroup/" target="_blank">facebook</a>
+        <a class="gray-icons tg-icon" href="https://t.me/comnewsgroup" target="_blank">telegram</a>
+    </div>
+    </div>
+    <div class="de h-caption mobile">
+    <div class="c-container">
+    <a href="/" class="cnlogo"></a>'  // <a class="fullversion" href="javascript:void(0);">[ полная версия ]</a>
+        .'<a class="gray-icons fb-icon" href="https://www.facebook.com/comnewsgroup/" target="_blank">facebook</a>
+        <a class="gray-icons tg-icon" href="https://t.me/comnewsgroup" target="_blank">telegram</a>
+    </div>
+    </div>
+    ';
+    // logo
+    $out .='
+    <div class="de-h-logo desktop">
+    <div class="c-container">
+        <a href="/digital-economy"><img src="/themes/site/images/DE-site.png"/></a>
+        <div class="de-h-menu">
+            <div id="de-tags-menu">
+            <span></span>
+            <a href="/digital-economy/news">Новости</a>
+            <div class="tags">'.$tags.'</div>
+            </div>
+            <a href="/digital-economy/opinions">Мнение</a>
+            <a href="/digital-economy/quotes">Цитаты</a>
+            <a href="/digital-economy/documents">Документы</a>
+            <a href="/digital-economy/case-study">Проекты</a>
+            <a href="https://whoiswho.comnews.ru">Кто есть кто</a>
+            <a href="/digital-economy/awards/2018">Лучшие проекты 2018 года</a>
+        </div>
+    </div>
+    </div>
+    <div class="de h-logo mobile">
+    <div class="c-container">
+        <a class="de-h-logo"  href="/digital-economy"></a>
+    </div>
+    </div>
+    <div class="de h-menu mobile">
+    <div class="c-container">
+        <a href="/digital-economy/news">Новости</a>
+        <a href="/digital-economy/opinions">Мнение</a>
+        <a href="/digital-economy/quotes">Цитаты</a>
+    </div>
+    </div>
+    '.$banners.'
+    ';
+    
+
+
+    return $out;
+}
+
+function cn_renderVisionHeader(){
+    $out = '';
+    //banner
+
+    
+    $banners = '
+    <div id="header-bnrs" class="bnrs c-container desktop">
+    '.cn_renderBannerSite('bnV001',0).' 
+    </div>
+    ';
+
+    // caption
+    $out .= '
+    <a id="top" href="/" style="display:block;"></a>
+    <div class="v-h-caption desktop">
+    <div class="c-container">
+        <a class="logo" href="/"><img src="/themes/site/images/DE-comnews-top.png"/></a>
+       
+        <span id="currency-rates"></span>  
+        <a class="gray-icons fb-icon" href="https://www.facebook.com/comnewsgroup/" target="_blank">facebook</a>
+        <a class="gray-icons tg-icon" href="https://t.me/comnewsgroup" target="_blank">telegram</a>
+    </div>
+    </div>
+    <div class="v h-caption mobile">
+    <div class="c-container">
+    <a href="/" class="cnlogo"></a>'  
+        .'<a class="gray-icons fb-icon" href="https://www.facebook.com/comnewsgroup/" target="_blank">facebook</a>
+        <a class="gray-icons tg-icon" href="https://t.me/comnewsgroup" target="_blank">telegram</a>
+    </div>
+    </div>
+    ';
+    // logo
+    $out .='
+    <div class="v-h-logo desktop">
+    <div class="c-container">
+        <a href="/vision"><img src="/themes/site/images/vision-logo.jpg"/></a>
+        <div class="v-h-menu">
+            <a href="/vision/reviews">Обзоры</a>
+            <a href="/vision/point-of-view">Точка зрения</a>
+            <a href="/vision/analytics">Аналитика</a>
+            <a href="/vision/issues">Архив выпусков</a>
+        </div>
+    </div>
+    </div>
+    <div class="v h-logo mobile">
+    <div class="c-container">
+        <a class="v-h-logo"  href="/vision"></a>
+    </div>
+    </div>
+    <div class="v h-menu mobile">
+    <div class="c-container">
+            <a href="/vision/reviews">Обзоры</a>
+            <a href="/vision/point-of-view">Точка зрения</a>
+            <a href="/vision/analytics">Аналитика</a>
+            <a href="/vision/issues">Архив выпусков</a>
+    </div>
+    </div>
+    '.$banners.'';
+    
+    return $out;
+}
+
+function cn_renderCounters(){
+
+	if (cn_isAdmin()) return '';
+
+	$res = '
+	<div id="counters" style="position:absolute; bottom:10px; right:10px;">
+<!--LiveInternet counter--><script type="text/javascript"><!--
+document.write("<a href=\'https://www.liveinternet.ru/click\' "+
+"target=_blank><img src=\'https://counter.yadro.ru/hit?t38.2;r"+
+escape(document.referrer)+((typeof(screen)=="undefined")?"":
+";s"+screen.width+"*"+screen.height+"*"+(screen.colorDepth?
+screen.colorDepth:screen.pixelDepth))+";u"+escape(document.URL)+
+";"+Math.random()+
+"\' alt=\'\' title=\'LiveInternet\' "+
+"border=0 width=31 height=31><\/a>")//--></script><!--/LiveInternet-->
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function (d, w, c) {
+        (w[c] = w[c] || []).push(function() {
+            try {
+                w.yaCounter14697889 = new Ya.Metrika({
+                    id:14697889,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true,
+                    webvisor:true
+                });
+            } catch(e) { }
+        });
+
+        var n = d.getElementsByTagName("script")[0],
+            s = d.createElement("script"),
+            f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+        if (w.opera == "[object Opera]") {
+            d.addEventListener("DOMContentLoaded", f, false);
+        } else { f(); }
+    })(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/14697889" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var google_conversion_id = 974265351;
+var google_conversion_label = "V88sCNK2_nkQh7jI0AM";
+var google_custom_params = window.google_tag_params;
+var google_remarketing_only = true;
+/* ]]> */
+</script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+</script>
+<noscript>
+<div style="display:inline;">
+<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/974265351/?label=V88sCNK2_nkQh7jI0AM&amp;guid=ON&amp;script=0"/>
+</div>
+</noscript>		
+</div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,\'script\',\'//www.google-analytics.com/analytics.js\',\'ga\');
+  ga(\'create\', \'UA-4916267-1\', \'auto\');
+  ga(\'send\', \'pageview\');
+</script>
+
+<!-- -->
+<!-- Facebook Pixel Code -->
+
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version=\'2.0\';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,\'script\',
+  \'https://connect.facebook.net/en_US/fbevents.js\');
+  fbq(\'init\', \'2470343146577657\');
+  fbq(\'track\', \'PageView\');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=2470343146577657&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Facebook Pixel Code -->
+
+<script type="text/javascript">!function(){var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src="https://vk.com/js/api/openapi.js?162",t.onload=function(){VK.Retargeting.Init("VK-RTRG-427810-2p6mi"),VK.Retargeting.Hit()},document.head.appendChild(t)}();</script><noscript><img src="https://vk.com/rtrg?p=VK-RTRG-427810-2p6mi" style="position:fixed; left:-999px;" alt=""/></noscript>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+   ym(21743185, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        trackHash:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/21743185" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144763173-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag(\'js\', new Date());
+  gtag(\'config\', \'UA-144763173-1\');
+</script>
+<!-- -->
+';
+
+
+return $res;
+}
+
+
+function cn_renderFooter(){
+    global $showallbanners;
+    $out = '';
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $url = $url[0];
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url));
+    $url = explode('/',$url);
+
+    if(isset($url[1]) && $url[1] == 'projects'){
+        $out = cn_renderCustomFooter();
+    } else if((isset($url[1]) && $url[1] == 'digital-economy') || (isset($url[2]) && $url[2] == 'digital-economy')){
+        $out = cn_renderDEFooter();
+    } else if(isset($url[1]) && $url[1] == 'adm'){
+        $out = cn_renderAdmFooter();
+    } else {
+        $out = cn_renderComnewsFooter();
+    }
+
+    if(isset($_GET['show-mv-fullscreen'])) {
+        $out .= '<script> var force_show_mv_fullscreen =1;</script>';	
+    } else {
+        $out .= '<script> var force_show_mv_fullscreen =0;</script>';	
+    }
+
+    if ($showallbanners == 1) $out .= '<div id="saboff" style="display:block;position:fixed;top:0px;left:calc(50% - 100px);width:200px;line-height:40px;text-align:center;z-index:6666;background-color:black;border-radius:0px 0px 5px 5px;"><a href="/?showallbanners=0" style="color:white!important;">скрыть баннерные зоны</a></div>';
+
+    return $out.'<div id="bn-popup" class="mobile">'.cn_renderBannerSite('bnPopUp',0).'</div><div id="bn-fullscreen" class="mobile"><div class="fullscreen-container"><button id="bn-close" class="btn">Закрыть и перейти на сайт ComNews.ru</button>'.cn_renderBannerSite('bnFullScreen',0).'</div></div>';
+}
+function cn_renderDEFooter(){
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('de', $parent = 0, $max_depth = 1, $load_entities = FALSE);
+    $tags = '';
+    foreach($terms as $term){
+      if(!in_array($term->tid, array(1034,1042))){
+        $tags .= '<a href="/digital-economy/companies'.\Drupal::service('path.alias_manager')->getAliasByPath('/taxonomy/term/'.$term->tid).'">'.$term->name.'</a>';
+      }
+    }
+    $out = '
+    '.cn_renderBannerSite('bn0026',0).cn_renderBannerSite('bn0027',0).' 
+    <div class="c-container desktop">
+    <div class="de-f-menu m1">
+        <a href="/digital-economy/news">Новости</a>
+        <a href="/digital-economy/opinions">Мнение</a>
+        <a href="/digital-economy/quotes">Цитаты</a>
+        <a href="/digital-economy/documents">Документы</a>
+    </div>
+    <div class="de-f-menu m2">
+        <a href="/digital-economy/case-study">Проекты</a>
+        <a href="https://whoiswho.comnews.ru">Кто есть кто</a>
+        <a href="/digital-economy/awards/2018">Лучшие проекты 2018 года</a>
+        
+    </div>
+    <div class="de-f-menu m4">
+        '.$tags.'
+    </div>
+    <div class="copyright">
+        <a href="/digital-economy" class="delogo"></a>
+        1999 - '.date('Y').' &copy; ComNews.ru<br/>
+        <a href="/" class="cnlogo"></a>
+    </div>
+    <div class="address a1">
+    107140 Москва,<br>Верхняя Красносельская ул.,<br/> 
+    д. 2/1, стр. 1, офис 426<br/>
+    Тел.: +7 495 933 5483, +7 495 677 9230<br/>
+    E-mail: <a href="mailto:info@comnews.ru">info@comnews.ru</a><br>
+    </div>
+    <div class="address a2">
+    190013, Санкт-Петербург,<br>Московский пр.,<br>д. 22, литера Л, помещение 34Н<br>Тел.: +7 812 670 2030<br>
+    E-mail: <a href="mailto:info@comnews.ru">info@comnews.ru</a>
+    </div>
+    </div>
+
+    <div class="c-container mobile">
+        <div class="copyright">
+                <a href="/digital-economy" class="delogo-m"></a>
+                1999 - '.date('Y').' &copy; ComNews.ru<br/><br><br>
+                Тел.: +7 495 933 5483,+7 495 677 9230, +7 812 670 2030<br/>
+    E-mail: <a href="mailto:info@comnews.ru">info@comnews.ru</a><br><br>
+                <a href="/" class="cnlogo"></a>
+                <span>При использовании материалов ссылка на ComNews обязательна<br/>
+            Свидетельство о регистрации СМИ от 8 декабря 2006 г. Эл № ФC 77-26395</span>
+            </div>
+    </div>
+    '.cn_renderCounters().'
+    ';
+
+    return $out;
+}
+function cn_renderComnewsFooter(){
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tags', $parent = 0, $max_depth = 1, $load_entities = FALSE);
+    $tags = '';
+    foreach($terms as $term){
+      if($term->tid != 1003){
+        $tags .= '<a href="'.\Drupal::service('path.alias_manager')->getAliasByPath('/taxonomy/term/'.$term->tid).'">'.$term->name.'</a>';
+      }
+    }
+    $out = cn_renderBannerSite('bn0012',0).cn_renderBannerSite('bn0013',0).'
+    <div class="c-container desktop">
+    <div class="f-menu m1">
+        <a href="/authors">Авторы</a>
+        <div class="m-header">Новости</div>
+        <div class="tags">'.$tags.'</div>
+    </div>
+    <div class="f-menu m2">
+        <a href="/digital-economy">Цифровая экономика</a>
+        <a href="/editorials">Редколонка</a>
+        <a href="/point-of-view">Точка зрения</a>
+        <a href="/shortnews">В фокусе</a>
+        <a href="/quotes">Цитата дня</a>
+        <a href="/polls">Вопрос недели</a>
+        <a href="/exhibitions">Конференции / Выставки</a>
+        <a href="/videointerviews">Видеоинтервью</a>
+        <!--<a href="/rebuttals">Опровержения</a> -->
+        <a href="https://comments.comnews.ru/cs">Форум</a>
+        <!--<a href="/">Курсы валют</a>-->
+        <a href="/pressreleases" style="color:#be0027;">Новости компаний</a>
+        <a href="/solutions" style="color:#be0027;">Решения / Технологии</a>
+        <a href="/covid-19" style="color:#be0027;">OТРАСЛЬ В ОТВЕТ НА COVID-19</a>
+        <a href="/remote-work" style="color:#be0027;">Решения для удаленной работы</a>
+        <a href="/rss">RSS</a>
+        
+    </div>
+    <div class="f-menu m3">
+        <a href="https://www.comnews-conferences.ru">ComNews Conferences</a>
+        <a href="/vision" style="color:#be0027;">Vision</a>
+        <a href="/standart">Стандарт</a>
+        <a href="https://whoiswho.comnews.ru" style="line-height: 15px;padding: 5px 0px;">Цифровая трансформация.<br>Кто есть кто</a>
+        <a href="/digital-economy/awards/2018" style="line-height: 15px;padding: 5px 0px;">Цифровая трансформация.<br>Лучшие проекты 2018 года</a>
+        <a href="/arhiv/calendar">Архив ComNews.ru</a>
+        <a href="/about/archive">Архив проектов</a>
+        
+    </div>
+    <div class="f-menu m4" style="padding-top:150px;">
+        <a href="#" id="subscribe-d" onclick="MG_LightboxOpen(\'3574675a9d232b3fb19ee34449fcb96e\', \'89bc67c0\')" data-mg-open="MG-placeholder-1531387722706" ></a>
+        <a href="/adv" style="color:#be0027;">Реклама</a>
+        <a href="/about">О нас</a>
+        <a href="/about/en">About Us</a>
+        <a href="/contact/feedback">Письмо в редакцию</a>
+        <a href="javascript://void(0)" style="display:none;" id="force-mobile">Мобильная версия</a>
+    </div>
+    <div class="copyright">
+        <a href="/" class="logo"></a>
+        При использовании материалов ссылка на ComNews обязательна<br/>
+        1999 - '.date('Y').' &copy; ComNews.ru<br/>
+        Свидетельство о регистрации СМИ от 8 декабря 2006 г.<br/>
+        Эл № ФC 77-26395
+
+    </div>
+    <div class="address a1">
+    107140 Москва,<br>Верхняя Красносельская ул.,<br/> 
+    д. 2/1, стр. 1, офис 426<br/>
+    Тел.: +7 495 933 5483, +7 495 677 9230<br/>
+    E-mail: <a href="mailto:info@comnews.ru">info@comnews.ru</a><br>
+    </div>
+    <div class="address a2">
+    190013, Санкт-Петербург,<br>Московский пр.,<br>д. 22, литера Л, помещение 34Н<br>Тел.: +7 812 670 2030<br>
+    E-mail: <a href="mailto:info@comnews.ru">info@comnews.ru</a>
+    </div>
+    </div>
+
+    <div class="c-container mobile">
+    <a href="#" id="subscribe-m" onclick="MG_LightboxOpen(\'3574675a9d232b3fb19ee34449fcb96e\', \'89bc67c0\')" data-mg-open="MG-placeholder-1531387722706"></a>
+        <div class="copyright">
+            <a href="/" class="logo"></a>
+            1999 - '.date('Y').' &copy; ComNews.ru<br/>
+            +7 495 933 5483<br/>
+            +7 495 677 9230<br/>
+            +7 812 670 2030<br>
+            E-mail: <a href="mailto:info@comnews.ru">info@comnews.ru</a>
+            <span>
+            При использовании материалов ссылка на ComNews обязательна<br/>
+            Свидетельство о регистрации СМИ от 8 декабря 2006 г. Эл № ФC 77-26395</span>
+        </div>
+    </div>
+    
+    </div>
+    '.cn_renderCounters().'
+
+    ';
+
+    return $out;
+}
+
+function cn_renderSideBar(){
+    $out = '';
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $url = $url[0];
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url));
+    $url = explode('/',$url);
+
+    if($url[1] == 'digital-economy'){
+        $show = true;
+        if(isset($url[2]) && in_array($url[2], array('content','awards','companies','case-study','news','opinions','quotes','arhiv','node'))) $show = false;
+
+        if($show) $out = cn_renderDESideBar();
+    } else {
+        $show = true;
+        if(isset($url[1]) && in_array($url[1], array('main','search','index.php','authors','about','adv','feedback','standart','projects','contact','top2019','reviews','vision'))) $show = false;
+        
+        if(isset($url[1]) && in_array($url[1], array('projects')) && isset($url[2]) && in_array($url[2], array('encyclopedia-starlink'))) {
+            $show = true;
+            $out = cn_renderCustomSideBar($node);
+            return $out;
+        }    
+
+        if(isset($url[1]) && in_array($url[1], array('vision')) && isset($url[2]) && in_array($url[2], array('point-of-view','reviews','analytics'))) {
+            $show = true;
+            $out = cn_renderVisionSideBar($node);
+            return $out;
+        }    
+
+        if($show){
+            if(cn_getVal($url[1]) == 'arhiv' && cn_getVal($url[2]) == 'calendar'){
+                $out = cn_renderCalendarSideBar(cn_getVal($url[3]));
+            } else // remote work
+            if(cn_getVal($url[1]) == 'remote-work' || (cn_getVal($url[1]) == 'node' && cn_getVal($url[2]) == '205929')){
+                $out = cn_renderRWSideBar();
+                return $out;    
+            } else {  
+                
+                if(isset($path[2]) && in_array($path[1], array('node','content'))){
+                    $node = \Drupal\node\Entity\Node::load(intval($path[2]));
+                    if($node && in_array($node->getType(),array('review'))){
+                        if(isset($node->field_vision_parent->target_id)){
+                            $out = cn_renderVisionSideBar($node);
+                            return $out;
+                        } else {   
+                            $out = cn_renderReviewsSideBar($node);
+                            return $out;
+                        }
+                    }
+                }
+                $out = cn_renderComnewsSideBar();
+            }
+        }    
+    }
+
+    return $out;
+}
+
+function cn_showSideBar(){
+    $show = true;
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $url = $url[0];
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url));
+    $url = explode('/',$url);
+
+    if ($exception = $request->attributes->get('exception')) {
+        // Get the status code.
+        $status_code = $exception->getStatusCode();
+        if (in_array($status_code, array(404,403))) {
+            return false;
+        }
+    }        
+
+
+
+    if(isset($url[1]) && $url[1] == 'adm'){
+        $show = false;
+    } else if(isset($url[1]) && $url[1] == 'digital-economy'){
+        if(isset($url[2]) && in_array($url[2], array('content','awards','companies','case-study','news','opinions','quotes','arhiv','node'))) $show = false;
+    } else {
+         
+        if(!isset($url[1])) $show = false;
+        if(isset($url[1]) && in_array($url[1], array('','index.php','main','search','authors','about','adv','feedback','standart','projects','contact','top2019','reviews','vision'))) $show = false;
+
+        if(isset($url[1]) && in_array($url[1], array('projects')) && isset($url[2]) && in_array($url[2], array('encyclopedia-starlink'))) $show = true;
+
+        if(isset($url[1]) && in_array($url[1], array('vision')) && isset($url[2]) && in_array($url[2], array('point-of-view','reviews','analytics'))) $show = true;
+
+        if(isset($path[2]) && in_array($path[1], array('node','content'))){
+            $node = \Drupal\node\Entity\Node::load(intval($path[2]));
+            if($node && in_array($node->getType(),array('review'))){
+                $folders = $node->get('field_folders')->getValue();
+                foreach($folders as $folder){
+                    if(in_array($folder['target_id'],array('1176'))){ // папки без правой колонки
+                        $show = false;
+                        break;
+                    }
+                } 
+            }   
+        }
+
+
+    }
+
+    return $show;
+}
+
+function cn_renderComnewsSideBar(){
+    $out = '';
+    $news_showed = array(0);
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $url = $url[0];
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url));
+    $url = explode('/',$url);
+    $currentNode = 0; 
+    // исключить из выборок текущую статью
+    if(isset($path[2]) && in_array($path[1], array('node','content'))){
+        $news_showed[] = intval($path[2]); 
+        $currentNode = intval($path[2]);
+    }
+    if(isset($path[2]) && isset($path[3]) && in_array($path[2], array('content'))){
+        $news_showed[] = intval($path[3]); 
+        $currentNode = intval($path[3]);
+    }
+     
+    $body = '';
+    // news ==================================================================================================
+    $news = '';
+    
+    $query = \Drupal::entityQuery('node')->condition('type', 'article')->condition('status', 1)
+        ->condition('field_folders', array(1007,1008,1009,1011),'IN')
+        ->condition('nid',$news_showed,'NOT IN')
+        ->condition('field_hp_date', cn_shortDBDate())
+        ->sort('field_folders','ASC')->sort('field_seq','ASC')
+        ;
+    $nids = $query->execute();
+    
+    if(!count($nids)){
+      $query = \Drupal::entityQuery('node')->condition('type', 'article')->condition('status', 1)
+        ->condition('field_folders', array(1007,1008,1009,1011),'IN')
+        ->condition('nid',$news_showed,'NOT IN')
+        ->sort('field_date','DESC')->sort('field_folders','ASC')->sort('field_seq','ASC')->sort('created','DESC')->range(0,10);
+        $nids = $query->execute();
+    } 
+
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $news_showed[] = $node->id();
+      $news .= '<div class="block-node small"><a href="'.cn_getNodeAlias($node).'"><h4 class="node-title">'.$node->title->value.'</h4></a></div>';  
+    }
+    $news =cn_renderHPblock('news','Новости','/news',$news,'white-bg'); 
+
+    // interview from review ==================================================================================================
+    $reviews = '';
+    $query = \Drupal::entityQuery('node')->condition('type', 'review')->condition('status', 1)
+        ->condition('field_folders', array(1166,1179),'IN')
+        ->condition('field_hp_date', cn_shortDBDate())
+        ->sort('field_seq','ASC')
+        ;
+    $nids = $query->execute();
+
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $img = cn_renderBlockImage($node->field_image);
+      $lid = cn_renderLid($node->body,300);
+      $person = cn_renderNodePerson($node);
+      $news_showed[] = $node->id();
+      $reviews .= '<div class="block-node person"><a href="'.cn_getNodeAlias($node).'">'.$img.$person.'<h4 class="node-title">'.$node->title->value.'</h4><div class="node-text">'.$lid.'</div></a></div>';  
+    }
+    // point-of-view ==================================================================================================
+    $points = '';
+    $query = \Drupal::entityQuery('node')->condition('type', 'interview')->condition('status', 1)
+        ->condition('field_folders', 1013)
+        //->condition('nid',$news_showed,'NOT IN')
+        ->condition('field_hp_date', cn_shortDBDate())
+        ->sort('field_seq','DESC')
+        ;
+    $nids = $query->execute();
+    $tmp = array();
+    foreach($nids as $key => $nid){
+        if(!in_array($nid,$news_showed)){
+            $tmp[$key] = $nid;
+        }
+    } 
+    
+    if(!count($nids) && $reviews == ''){
+      $query = \Drupal::entityQuery('node')->condition('type', 'interview')->condition('status', 1)
+        ->condition('field_folders', 1013)
+        ->condition('nid',$news_showed,'NOT IN')
+        ->sort('field_date','DESC')->sort('field_seq','ASC')->sort('created','DESC')->range(0,1);
+        $nids = $query->execute();
+    } else {
+        $nids = $tmp;
+    }
+
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $img = cn_renderBlockImage($node->field_image);
+      $lid = cn_renderLid($node->body,300);
+      $person = cn_renderNodePerson($node);
+      $news_showed[] = $node->id();
+      $points .= '<div class="block-node person"><a href="'.cn_getNodeAlias($node).'">'.$img.$person.'<h4 class="node-title">'.$node->title->value.'</h4><div class="node-text">'.$lid.'</div></a></div>';  
+    }
+    //$points =cn_renderHPblock('pointofview','Точка зрения','/point-of-view',$points,'gray-bg'); 
+    
+    $points =cn_renderHPblock('pointofview','Точка зрения','/point-of-view',$points.$reviews,'gray-bg'); 
+    // de_opinions ==================================================================================================
+    $de_opinions = '';
+    $query = \Drupal::entityQuery('node')->condition('type', 'interview')->condition('status', 1)
+        ->condition('field_folders', 1016)
+        ->condition('nid',$news_showed,'NOT IN')
+        ->condition('field_hp_date', cn_shortDBDate())
+        ->sort('field_seq','ASC')
+        ;
+    $nids = $query->execute();
+    
+    if(!count($nids)){
+      $query = \Drupal::entityQuery('node')->condition('type', 'interview')->condition('status', 1)
+        ->condition('field_folders', 1016)
+        ->condition('nid',$news_showed,'NOT IN')
+        ->sort('field_date','DESC')->sort('field_seq','ASC')->sort('created','DESC')->range(0,2);
+        $nids = $query->execute();
+    } 
+     
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $img = cn_renderBlockImage($node->field_image);
+      $lid = cn_renderLid($node->body,300);
+      $person = cn_renderNodePerson($node);
+      $news_showed[] = $node->id();
+      $de_opinions .= '<div class="block-node person"><a href="'.cn_getNodeAlias($node).'">'.$img.$person.'<h4 class="node-title">'.$node->title->value.'</h4><div class="node-text">'.$lid.'</div></a></div>';  
+    }
+    $de_opinions =cn_renderHPblock('de-opinions','Мнение','/digital-economy/opinions',$de_opinions,'gray-bg'); 
+
+    // editorials ==================================================================================================
+    $editorials = '';
+    /*
+    $query = \Drupal::entityQuery('node')->condition('type', 'editorial')->condition('status', 1)
+        ->condition('field_folders', 1002)
+        ->condition('nid',$news_showed,'NOT IN')
+        ->condition('field_hp_date', cn_shortDBDate())
+        ->sort('field_seq','ASC')
+        ;
+    $nids = $query->execute();
+    */
+    //$d1 = cn_shortDBDate('this monday');
+    //$d2 = cn_shortDBDate('this sunday');
+    $d1 = cn_shortDBDate(date('Y-m-d',strtotime(date('Y-m-d',time()).' + 1 day')).' last monday');
+    $d2 = cn_shortDBDate(date('Y-m-d',time()).' sunday');  
+      
+    $query = \Drupal::entityQuery('node')->condition('type', 'editorial')->condition('status', 1)
+          ->condition('field_folders', 1002)
+          ->condition('field_hp_date', $d1, '>=')->condition('field_hp_date', $d2, '<=')
+          //->condition('field_hp_date', cn_shortDBDate())
+          ->sort('field_seq','ASC');
+    /*
+        $query = \Drupal::entityQuery('node')->condition('type', 'editorial')->condition('status', 1)
+        ->condition('field_folders', 1002)
+        //->condition('nid',$news_showed,'NOT IN')
+        ->sort('field_date','DESC')->sort('field_seq','ASC')->sort('created','DESC')->range(0,1);
+    */
+    $nids = $query->execute();
+    
+    $tmp = array();
+    //ksm($news_showed);ksm($nids);
+    foreach($nids as $key => $nid){
+        if(!in_array($nid,$news_showed)){
+            $tmp[$key] = $nid;
+        }
+    } 
+    $nids = $tmp;
+    
+
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $img = cn_renderBlockImage($node->field_image);
+      $lid = cn_renderLid($node->body,300);
+      $person = cn_renderNodePerson($node);
+      $news_showed[] = $node->id();
+      $editorials .= '<div class="block-node person"><a href="'.cn_getNodeAlias($node).'">'.$img.$person.'<h4 class="node-title">'.$node->title->value.'</h4><div class="node-text">'.$lid.'</div></a></div>';  
+    }
+    $editorials =cn_renderHPblock('editorials','Редколонка','/editorials',$editorials,'gray-bg'); 
+    
+    // de_news ==================================================================================================
+    $de_news = '';
+    $query = \Drupal::entityQuery('node')->condition('type', 'article')->condition('status', 1)
+        ->condition('field_folders', 1012)
+        ->condition('nid',$news_showed,'NOT IN')
+        ->condition('field_hp_date', cn_shortDBDate())
+        ->sort('field_seq','ASC')
+        ;
+    $nids = $query->execute();
+
+    if(count($nids)< 8 ){
+      $query = \Drupal::entityQuery('node')->condition('type', 'article')->condition('status', 1)
+        ->condition('field_folders', 1012)
+        ->condition('nid',$news_showed,'NOT IN')
+        ->sort('field_date','DESC')->sort('field_seq','ASC')->sort('created','DESC')->range(0,8);
+        $nids = $query->execute();
+    } 
+
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $news_showed[] = $node->id();
+      $de_news .= '<div class="block-node small"><a href="'.cn_getNodeAlias($node).'"><h4 class="node-title">'.$node->title->value.'</h4></a></div>';  
+    }
+    $de_news =cn_renderHPblock('de-news','Цифровая экономика','/digital-economy',$de_news,'white-bg'); 
+    /********************************* */
+    $lastcomments = cn_renderHPblock('last-comments','Сейчас обсуждают','','<div style="height:650px;" data-qnt="7"><img src="/img/1/loader.gif" style="margin: 60px auto 0px; display:block;" class="loader"/></div>','white-bg last-comments');    
+    
+
+    $out =  '<a href="#" id="subscribe-u" onclick="MG_LightboxOpen(\'3574675a9d232b3fb19ee34449fcb96e\', \'89bc67c0\')" data-mg-open="MG-placeholder-1531387722706"></a>'
+            .($currentNode != 209064 ? cn_renderBannerSite('bn0011',0) : '')
+            .$de_news
+            .cn_renderBannerSite('bn0028',0)
+            .$news
+            .cn_renderBannerSite('bn0036',0)
+            .$points
+            .cn_renderBannerSite('bn0029',0)
+            .$lastcomments
+            .cn_renderBannerSite('bn0030',0)
+            .$editorials
+            .cn_renderBannerSite('bn0031',0)
+            //.$de_opinions
+            .cn_renderBannerSite('bn0032',0)
+    ;
+
+    return $out;
+}
+function cn_renderVisionSideBar($node){
+    $out = '';
+    $news_showed = 0;
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $url = $url[0];
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url));
+    $url = explode('/',$url);
+     
+    // исключить из выборок текущую статью
+    if(isset($path[2]) && in_array($path[1], array('node','content'))){
+        $news_showed = intval($path[2]); 
+    }
+    if(isset($path[2]) && isset($path[3]) && in_array($path[2], array('content'))){
+        $news_showed  = intval($path[3]); 
+    }
+    $node = \Drupal\node\Entity\Node::load($news_showed);
+
+    $issue = \Drupal\node\Entity\Node::load($node->field_vision_parent->target_id);
+     
+    $body = '';
+    // news ==================================================================================================
+    /*
+    $news = '';
+    foreach(explode(chr(10),$node->field_r_links->value) as $link){
+        $nid = explode('/',$link);
+        $nid = intval($nid[4]);
+        if( $nid != $news_showed){
+            $node1 = \Drupal\node\Entity\Node::load($nid);
+            if($node1){
+                $img = cn_renderBlockImage($node1->field_image);
+                $lid = cn_renderLid($node1->body,300);
+                $person = cn_renderNodePerson($node1);
+                if($nid == '207927') $person = '<div class="node-person"><span>Вадим<br> Злобин</span> <br>  генеральный директор компании "Систематика Консалтинг"</div>';
+                $news .= '<div class="block-node person"><a href="'.cn_getNodeAlias($node1).'">'.$img.$person.'<h4 class="node-title">'.  $node1->title->value.'</h4><div class="node-text">'.$lid.'</div></a></div>';  
+            }
+        }
+        
+         
+    }
+    $news = cn_renderHPblock('materials','Материалы обзора','',$news,'gray-bg'); 
+    $out = $news.'';
+    */
+    /*
+    $node = \Drupal\node\Entity\Node::load(208026);
+    $img = cn_renderBlockImage($node->field_image);
+    $lid = cn_renderLid($node->body,200,true);
+    $more = '<div class="block-node"><a href="'.cn_getNodeAlias($node).'">'.$img.'<h4 class="node-title">'.$node->title->value.'</h4><div class="node-text">'.$lid.'</div></a>'.$tags.'</div>';  
+    $node = \Drupal\node\Entity\Node::load(208028);
+    $img = cn_renderBlockImage($node->field_image);
+    $lid = cn_renderLid($node->body,200,true);
+    $more .= '<div class="block-node"><a href="'.cn_getNodeAlias($node).'">'.$img.'<h4 class="node-title">'.$node->title->value.'</h4><div class="node-text">'.$lid.'</div></a>'.$tags.'</div>';  
+    $node = \Drupal\node\Entity\Node::load(208031);
+    $img = cn_renderBlockImage($node->field_image);
+    $lid = cn_renderLid($node->body,200,true);
+    $more .= '<div class="block-node"><a href="'.cn_getNodeAlias($node).'">'.$img.'<h4 class="node-title">'.$node->title->value.'</h4><div class="node-text">'.$lid.'</div></a>'.$tags.'</div>';  
+    $more = cn_renderHPblock('mainnews','Читайте также','',$more,'gray-bg');  
+    */
+    $more = '';
+    foreach(explode(chr(10),$issue->field_r_links->value) as $link){
+        $n = explode('/',$link);
+        $n = intval($n[4]);
+        if($n && $n != $news_showed){
+          $node = \Drupal\node\Entity\Node::load($n);
+          $img = cn_renderBlockImage($node->field_image);
+          $lid = cn_renderLid($node->body,200,true);
+          $more .= '<div class="block-node"><a href="'.cn_getNodeAlias($node).'">'.$img.'<h4 class="node-title">'.$node->title->value.'</h4><div class="node-text">'.$lid.'</div></a>'.$tags.'</div>';  
+        }  
+    }
+    $more = cn_renderHPblock('mainnews','Читайте также','',$more,'gray-bg');  
+  
+
+
+    $out = cn_renderBannerSite('bnV002',0).cn_renderBannerSite('bnV004',0).'<br/>'.$more.cn_renderBannerSite('bnV003',0).cn_renderBannerSite('bnV005',0).cn_renderBannerSite('bnV006',0).cn_renderBannerSite('bnV007',0);
+    /*
+    $out =  '<a href="#" id="subscribe-u" onclick="MG_LightboxOpen(\'3574675a9d232b3fb19ee34449fcb96e\', \'89bc67c0\')" data-mg-open="MG-placeholder-1531387722706"></a>'
+            .cn_renderBannerSite('bn0011',0)
+            .$de_news
+            .cn_renderBannerSite('bn0028',0)
+            .$news
+            .cn_renderBannerSite('bn0036',0)
+            .$points
+            .cn_renderBannerSite('bn0029',0)
+            .$lastcomments
+            .cn_renderBannerSite('bn0030',0)
+            .$editorials
+            .cn_renderBannerSite('bn0031',0)
+            //.$de_opinions
+            .cn_renderBannerSite('bn0032',0)
+    ;
+    */
+    return $out;
+}
+function cn_setCustomSideBar($content){
+    global $custom_sidebar;
+    $custom_sidebar = $content;
+    return true; 
+}
+function cn_renderCustomSideBar(){
+    global $custom_sidebar;
+    return $custom_sidebar;
+}
+
+function cn_renderReviewsSideBar($node){
+    $out = '';
+    $news_showed = 0;
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $url = $url[0];
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url));
+    $url = explode('/',$url);
+     
+    // исключить из выборок текущую статью
+    if(isset($path[2]) && in_array($path[1], array('node','content'))){
+        $news_showed = intval($path[2]); 
+    }
+    if(isset($path[2]) && isset($path[3]) && in_array($path[2], array('content'))){
+        $news_showed  = intval($path[3]); 
+    }
+     
+    $body = '';
+    // news ==================================================================================================
+    $news = '';
+    foreach(explode(chr(10),$node->field_r_links->value) as $link){
+        $nid = explode('/',$link);
+        $nid = intval($nid[4]);
+        if( $nid != $news_showed){
+            $node1 = \Drupal\node\Entity\Node::load($nid);
+            if($node1){
+                $img = cn_renderBlockImage($node1->field_image);
+                $lid = cn_renderLid($node1->body,300);
+                $person = cn_renderNodePerson($node1);
+                if($nid == '207927') $person = '<div class="node-person"><span>Вадим<br> Злобин</span> <br>  генеральный директор компании "Систематика Консалтинг"</div>';
+                $news .= '<div class="block-node person"><a href="'.cn_getNodeAlias($node1).'">'.$img.$person.'<h4 class="node-title">'.  $node1->title->value.'</h4><div class="node-text">'.$lid.'</div></a></div>';  
+            }
+        }
+        
+         
+    }
+    $news = cn_renderHPblock('materials','Материалы обзора','',$news,'gray-bg'); 
+    $out = $news.'';
+
+    /*
+    $out =  '<a href="#" id="subscribe-u" onclick="MG_LightboxOpen(\'3574675a9d232b3fb19ee34449fcb96e\', \'89bc67c0\')" data-mg-open="MG-placeholder-1531387722706"></a>'
+            .cn_renderBannerSite('bn0011',0)
+            .$de_news
+            .cn_renderBannerSite('bn0028',0)
+            .$news
+            .cn_renderBannerSite('bn0036',0)
+            .$points
+            .cn_renderBannerSite('bn0029',0)
+            .$lastcomments
+            .cn_renderBannerSite('bn0030',0)
+            .$editorials
+            .cn_renderBannerSite('bn0031',0)
+            //.$de_opinions
+            .cn_renderBannerSite('bn0032',0)
+    ;
+    */
+    return $out;
+}
+function cn_renderRWSideBar(){
+    $out = '';
+    $news_showed = 0;
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $url = $url[0];
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url));
+    $url = explode('/',$url);
+    
+    cn_addToHiddenBanners('<div id="logos-rw" class="c-logos-inside"><div class="group g1">Стратегический<br/>партнер:<br>'.cn_renderBannerSite('LOGOSRW2','all').'</div><div class="group g2">При поддержке:<br/><br/>'.cn_renderBannerSite('LOGOSRW','all').'</div></div>');  
+    $out = '<style> #bn0007 {display:none!important;}</style>
+            <div class="page-standart" style="margin-left:-10px;"><div class="h">Журнал СТАНДАРТ</div>'.cn_renderStandartLinksBlock().'
+            <div class="h">О журнале</div>
+            <div class="l"><a href="/standart/2020">"Стандарт" 2020 год</a></div>
+            <div class="l"><a href="/standart/posters">Архив аналитических карт</a></div>
+            <div class="l"><a href="https://www.comnews.ru/sites/default/files/standart2020-03.pdf">Прайс</a></div>
+            <div class="l"><a href="/standart/adv/requirements">Технические требования</a></div>
+            <div class="l"><a href="/standart/subscription">Подписка на журнал</a></div>
+            </div>';
+    
+    return $out;
+}
+
+function cn_renderCalendarSideBar($date){
+    $out = '';
+    
+    $date = strtotime($date);
+    if($date === false){
+      $date = strtotime('today');
+    }
+
+    $news_showed = array();
+
+    $body = '';
+    
+    // point-of-view ==================================================================================================
+    $points = '';
+    $query = \Drupal::entityQuery('node')->condition('type', 'interview')->condition('status', 1)
+        ->condition('field_folders', 1013)
+        ->condition('field_hp_date', cn_shortDBDate($date))
+        ->sort('field_seq','ASC')
+        ;
+    $nids = $query->execute();
+
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $img = cn_renderBlockImage($node->field_image);
+      $lid = cn_renderLid($node->body,300);
+      $person = cn_renderNodePerson($node);
+      $news_showed[] = $node->id();
+      $points .= '<div class="block-node person"><a href="'.cn_getNodeAlias($node).'">'.$img.$person.'<h4 class="node-title">'.$node->title->value.'</h4><div class="node-text">'.$lid.'</div></a></div>';  
+    }
+    $points =cn_renderHPblock('pointofview','Точка зрения','/point-of-view',$points,'gray-bg'); 
+    
+    // de_opinions ==================================================================================================
+    $de_opinions = '';
+    $query = \Drupal::entityQuery('node')->condition('type', 'interview')->condition('status', 1)
+        ->condition('field_folders', 1016)
+        ->condition('field_hp_date', cn_shortDBDate($date))
+        ->sort('field_seq','ASC')
+        ;
+    $nids = $query->execute();
+    
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $img = cn_renderBlockImage($node->field_image);
+      $lid = cn_renderLid($node->body,300);
+      $person = cn_renderNodePerson($node);
+      $news_showed[] = $node->id();
+      $de_opinions .= '<div class="block-node person"><a href="'.cn_getNodeAlias($node).'">'.$img.$person.'<h4 class="node-title">'.$node->title->value.'</h4><div class="node-text">'.$lid.'</div></a></div>';  
+    }
+    $de_opinions =cn_renderHPblock('de-opinions','Мнение','/digital-economy/opinions',$de_opinions,'gray-bg'); 
+
+    // editorials ==================================================================================================
+    $editorials = '';
+    $d1 = cn_shortDBDate(date('Y-m-d',strtotime(date('Y-m-d',$date).' + 1 day')).' last monday');
+    $d2 = cn_shortDBDate(date('Y-m-d',$date).' sunday');
+    //ksm($d1,$d2);
+    $query = \Drupal::entityQuery('node')->condition('type', 'editorial')->condition('status', 1)
+        ->condition('field_folders', 1002);
+        if(date('Y-m-d',$date) < '2020-04-06' || date('Y-m-d',$date) > '2020-05-11'){
+            $query->condition('field_hp_date', $d1,'>=')->condition('field_hp_date', $d2,'<=');
+        } else {
+            $query->condition('field_hp_date', cn_shortDBDate(date('Y-m-d',$date)));
+        }
+        $query->sort('field_seq','ASC');
+    $nids = $query->execute();
+
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $img = cn_renderBlockImage($node->field_image);
+      $lid = cn_renderLid($node->body,300);
+      $person = cn_renderNodePerson($node);
+      $news_showed[] = $node->id();
+      $editorials .= '<div class="block-node person"><a href="'.cn_getNodeAlias($node).'">'.$img.$person.'<h4 class="node-title">'.$node->title->value.'</h4><div class="node-text">'.$lid.'</div></a></div>';  
+    }
+    $editorials =cn_renderHPblock('editorials','Редколонка','/editorials',$editorials,'gray-bg'); 
+    
+    // short_news ==================================================================================================
+    $short_news = '';
+    $query = \Drupal::entityQuery('node')->condition('type', 'article')->condition('status', 1)
+        ->condition('field_folders', 1010)
+        ->condition('field_hp_date', cn_shortDBDate($date))
+        ->sort('field_date','DESC')->sort('field_seq','DESC')->sort('created','DESC');
+        
+    $nids = $query->execute();
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $news_showed[] = $node->id();
+      $short_news .= '<div class="block-node small"><a href="'.cn_getNodeAlias($node).'"><h4 class="node-title">'.$node->title->value.'</h4></a></div>';  
+    }
+    $short_news =cn_renderHPblock('short-news','В фокусе','/shortnews',$short_news,'white-bg'); 
+
+    // pressreleases ==================================================================================================
+    $pressreleases = '';
+    $query = \Drupal::entityQuery('node')->condition('type', 'pressrelease')->condition('status', 1)
+        ->condition('field_folders', 1018)
+        ->condition('field_hp_date', cn_shortDBDate($date))
+        ->sort('field_date','DESC')->sort('field_seq','DESC')->sort('created','DESC')->range(0,7);
+        
+    $nids = $query->execute();
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $news_showed[] = $node->id();
+      $pressreleases .= '<div class="block-node small"><a href="'.cn_getNodeAlias($node).'"><h4 class="node-title">'.$node->title->value.'</h4></a></div>';  
+    }
+    $pressreleases = cn_renderHPblock('pressreleases','Новости компаний','/pressreleases',$pressreleases,'white-bg'); 
+
+    
+    $out =   $points.$editorials.$de_opinions.$pressreleases.$short_news;
+
+    return $out;
+}
+
+
+function cn_setHTMLTitle($title){
+    $request = \Drupal::request();
+    if ($route = $request->attributes->get(\Symfony\Cmf\Component\Routing\RouteObjectInterface::ROUTE_OBJECT)) {   
+    $route->setDefault('_title', strip_tags($title));
+    }
+}
+
+function cn_renderHiddenBanners(){
+    global $hidden_banners;
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $url = $url[0];
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url));
+    $url = explode('/',$url);
+    $out = '<div id="hidden-pool">';    
+    if(cn_getVal($url[1]) == 'about'){  
+        $yandexMaps = file_get_contents('/var/www/comnews2019/modules/comnews/yandex-maps.txt');  
+        $out .= cn_renderBannerSite('bnAbout1',0).cn_renderBannerSite('bnAbout2',0).cn_renderBannerSite('bnAbout3',0).cn_renderBannerSite('bnAbout4',0).'<div id="yandex-maps">'.$yandexMaps.'</div>';
+    } 
+    if(cn_bnScope() == 'comnews-hp') $out .= cn_renderBannerSite('bnM0003',0).cn_renderBannerSite('bnM0004',0);
+    if(cn_bnScope() == 'comnews-all') $out .= cn_renderBannerSite('bnM0005',0);
+
+    
+    if(isset($hidden_banners)){
+        foreach($hidden_banners as $bnr){
+            $out .= $bnr;
+        }
+    }
+    
+    $out .= '</div>';
+    return $out;
+}
+
+function cn_addToHiddenBanners($bnr){
+    global $hidden_banners;
+    $hidden_banners[] = $bnr; 
+}
+
+function cn_addToExcludedBanners($bnr){
+    global $excluded_banners;
+    $excluded_banners[] = $bnr; 
+}
+
+function cn_setCustomHeader($content){
+    global $custom_header;
+    $custom_header = $content;
+    return true; 
+}
+function cn_setCustomFooter($content){
+    global $custom_footer;
+    $custom_footer = $content;
+    return true; 
+}
+function cn_renderCustomHeader(){
+    global $custom_header;
+    return $custom_header;
+}
+function cn_renderCustomFooter(){
+    global $custom_footer;
+    return $custom_footer;
+}
+
+function cn_renderTint(){
+    // placed to template
+    return '';
+    /*
+	return '<!-- BEGIN Tynt Script -->
+<script type="text/javascript">
+if(document.location.protocol==\'http:\'){
+ var Tynt=Tynt||[];Tynt.push(\'dDoVTQkZOr44S-acwqm_6r\');
+ (function(){var s=document.createElement(\'script\');s.async="async";s.type="text/javascript";s.src=\'http://tcr.tynt.com/ti.js\';var h=document.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);})();
+}
+</script>
+<!-- END Tynt Script -->
+';
+*/	
+}
+
+function cn_processNoFollow($text){
+	
+	return preg_replace('#<a([^<]*)href=["\']http://(?!comnews.ru|www\.comnews.ru)([^"\']*)["\']([^<]*)>(.*)</a>#ismU',
+'<noindex><a$1href="http://$2"$3 rel="nofollow">$4</a></noindex>', $text);
+	
+	/*
+	return preg_replace('#<a([^<]*)href=["\'](?http|https)://(?!comnews.ru|www\.comnews.ru)([^"\']*)["\']([^<]*)>(.*)</a>#ismU',
+'<noindex><a$1href="$2://$3"$4 rel="nofollow">$5</a></noindex>', $text);
+	*/
+}
+
+function cn_renderNodeImages($content,$node){
+    $out = '';
+    
+    $out = cn_processNoFollow($content);
+	if (isset($node->field_images)){
+		foreach($node->get('field_images') as $i=>$img){  
+            $j = $i+1;
+                       
+            $out = str_replace(array(
+                '%img-url-'.$j.'%',
+                '%img-'.$j.'%',
+                '%img-480-'.$j.'%',
+                '%left-img-'.$j.'%',
+                '%left-img_r250-'.$j.'%',
+                '%img_r250-'.$j.'%',
+                '%img-250-'.$j.'%',
+                '%right-img-'.$j.'%',
+                '%person-img-'.$j.'%',
+                '%simple-img-'.$j.'%',
+                '%simple-img-800-'.$j.'%',
+                '<p>%break%</p>',
+            ),array(
+                cn_getImgStyleUrl('original',$img->entity->getFileUri()),
+                '<span class="desktop content-img"><a rel="lightbox[img]['.htmlspecialchars($img->alt).']" href="'.cn_getImgStyleUrl('original',$img->entity->getFileUri()).'"><img src="'.cn_getImgStyleUrl('img1200',$img->entity->getFileUri()).'" title="Увеличить" border="0"/></a><span style="display:block;">'.htmlspecialchars($img->title).'</span></span>
+                <span class="mobile content-img"><a href="'.cn_getImgStyleUrl('original',$img->entity->getFileUri()).'" target="_blank"><img src="'.cn_getImgStyleUrl('img1200',$img->entity->getFileUri()).'" title="Увеличить" border="0"/></a><span style="display:block;">'.htmlspecialchars($img->title).'</span></span>',
+
+                '<span class="desktop-inline content-img inline"><a rel="lightbox[img]['.htmlspecialchars($img->alt).']" href="'.cn_getImgStyleUrl('original',$img->entity->getFileUri()).'"><img src="'.cn_getImgStyleUrl('large',$img->entity->getFileUri()).'" title="Увеличить" border="0"/></a><span style="display:block;">'.htmlspecialchars($img->title).'</span></span>
+                <span class="mobile-inline content-img inline"><a href="'.cn_getImgStyleUrl('original',$img->entity->getFileUri()).'" target="_blank"><img src="'.cn_getImgStyleUrl('large',$img->entity->getFileUri()).'" title="Увеличить" border="0"/></a><span style="display:block;">'.htmlspecialchars($img->title).'</span></span>',
+
+                '<span class="desktop content-img left"><a rel="lightbox[img]['.htmlspecialchars($img->alt).']" href="'.cn_getImgStyleUrl('original',$img->entity->getFileUri()).'"><img src="'.cn_getImgStyleUrl('large',$img->entity->getFileUri()).'" title="Увеличить" border="0"/></a><span style="display:block;">'.htmlspecialchars($img->title).'</span></span><span class="mobile content-img left"><a href="'.cn_getImgStyleUrl('original',$img->entity->getFileUri()).'" target="_blank"><img src="'.cn_getImgStyleUrl('large',$img->entity->getFileUri()).'" title="Увеличить" border="0"/></a><span style="display:block;">'.htmlspecialchars($img->title).'</span></span>',
+
+                '<span class="content-img left" style="display:block;"><span class="r250" style="padding:0px;"><img src="'.cn_getImgStyleUrl('large',$img->entity->getFileUri()).'" title="'.htmlspecialchars($img->alt).'" border="0"/></span><span style="display:block;clear:both;">'.htmlspecialchars($img->title).'</span></span>',
+
+                '<span class="content-img c250" style="display:inline-block;"><img src="'.cn_getImgStyleUrl('large',$img->entity->getFileUri()).'" title="'.htmlspecialchars($img->alt).'" border="0"/><span style="display:block;">'.htmlspecialchars($img->title).'</span></span>',
+
+                '<span class="content-img i250" style="display:block;"><img src="'.cn_getImgStyleUrl('large',$img->entity->getFileUri()).'" title="'.htmlspecialchars($img->alt).'" border="0"/><span style="display:block;">'.htmlspecialchars($img->title).'</span></span>',
+
+                '<span class="desktop content-img right"><a rel="lightbox[img]['.htmlspecialchars($img->alt).']" href="'.cn_getImgStyleUrl('original',$img->entity->getFileUri()).'"><img src="'.cn_getImgStyleUrl('large',$img->entity->getFileUri()).'" title="Увеличить" border="0"/></a><span style="display:block;">'.htmlspecialchars($img->title).'</span></span><span class="mobile content-img right"><a href="'.cn_getImgStyleUrl('original',$img->entity->getFileUri()).'" target="_blank"><img src="'.cn_getImgStyleUrl('large',$img->entity->getFileUri()).'" title="Увеличить" border="0"/></a><span style="display:block;">'.htmlspecialchars($img->title).'</span></span>',
+
+                '<span class="desktop content-img left w360" width:360px;"><a rel="lightbox[img]['.htmlspecialchars($img->alt).']" href="'.cn_getImgStyleUrl('original',$img->entity->getFileUri()).'"><img src="'.cn_getImgStyleUrl('large',$img->entity->getFileUri()).'" title="Увеличить" border="0" style="max-width:360px;"/></a><span style="display:block;max-width:360px;">'.htmlspecialchars($img->title).'</span></span>
+                <span class="mobile content-img left w360" width:360px;"><a href="'.cn_getImgStyleUrl('original',$img->entity->getFileUri()).'" target="_blank"><img src="'.cn_getImgStyleUrl('large',$img->entity->getFileUri()).'" title="Увеличить" border="0" style="max-width:360px;"/></a><span style="display:block;max-width:360px;">'.htmlspecialchars($img->title).'</span></span>',    
+
+                '<span class="desktop-inline"><img src="'.cn_getImgStyleUrl('original',$img->entity->getFileUri()).'" title="'.htmlspecialchars($img->title).'" border="0" style="max-width:100%;"/></span>
+                <span class="mobile-inline"><img src="'.cn_getImgStyleUrl('large',$img->entity->getFileUri()).'" title="'.htmlspecialchars($img->title).'" border="0" style="max-width:100%;"/></span>',
+
+                '<img src="'.cn_getImgStyleUrl('img800',$img->entity->getFileUri()).'" title="'.htmlspecialchars($img->title).'" border="0" style="max-width:100%;"/>',
+
+                '<div class="clear"></div>',
+            ),$out);
+            
+            /*
+			$tmpcontent = str_replace("%person-img-".$j.'%','<span class="content-img" style="display:block; float:left; text-align:center; margin: 11px 11px 11px 0px!important; width:190px!important;"><a rel="lightbox[img]['.htmlspecialchars($img['alt']).']" href="'.image_style_url('news_original', $img['uri']).'"><img style="border:solid 1px #d0d2d3;" src="'.image_style_url('news_600', $img['uri']).'" title="Увеличить" border="0"/></a><span style="display:block; margin-bottom:5px; border-bottom:solid 1px #ccc; padding-bottom:5px; font-size:14px!important; text-align:left!important;">'.htmlspecialchars($img['title']).'</span></span>',$tmpcontent);
+			*/
+        }
+        //$tmpcontent = preg_replace('/%countdown-([^%]*)%/','<span class="countdown">$1</span>',$tmpcontent);
+    }
+    
+    if (isset($node->field_files)){
+		foreach($node->get('field_files') as $i=>$file){
+            $j = $i+1;
+            $url = file_create_url($file->entity->getFileUri());           
+            $description = $file->description;
+            $size = $file->entity->getSize();
+            $ext = explode('.',$file->entity->getFilename());
+            $ext = end($ext);
+            $out = str_replace(array(
+                '%file-'.$j.'%',
+                '%file-url-'.$j.'%', 
+            ),array(
+                '<a class="content-file '.$ext.'" target="_blank" href="'.$url.'">'.cn_t($description).' ( '.number_format($size/1024,2,'.',' ').' Кбайт )</a>',
+                $url,
+            ),$out);
+            
+		}
+	}
+
+    return $out;
+}
+
+function cn_transformOldNavLine($navline, $old_url = 'xxx', $new_url = 'yyy'){
+    $navline = str_replace(
+            array(
+                '<ul class="pager">',
+                'pager-first',
+                'pager-previous',
+                'pager-item',
+                'pager-current',
+                'pager-next',
+                'pager-last',
+                'pager-ellipsis',
+                'первая',
+                'предыдущая',
+                'следующая',
+                'последняя',
+                '...'
+            ),
+            array(
+                '<ul class="pagination js-pager__items">',
+                ' pager__item pager__item--first ',
+                ' pager__item pager__item--previous ',
+                ' pager__item ',
+                ' pager__item is-active active ',
+                ' pager__item pager__item--next ',
+                ' pager__item pager__item--last ',
+                'pager-ellipsis disabled',
+                '',
+                '',
+                '',
+                '',
+                '<span>...</span>'
+            ),$navline);
+            $navline = preg_replace('/\>([0-9]+)\<\/li\>/i','><a href="?page=$1">$1</a></li>',$navline);
+    if ($navline != '') $navline = '<nav class="pager-nav text-center">'.str_replace($old_url,$new_url,$navline).'</nav>';
+    return $navline;
+}
+
+function cn_isAdmin(){
+    //ksm(\Drupal::currentUser()->getRoles());
+    return in_array('administrator', \Drupal::currentUser()->getRoles()) || in_array('author', \Drupal::currentUser()->getRoles());
+}
+
+function cn_renderDESideBar(){
+    $out = '';
+    $news_showed = array(0);
+    $request = \Drupal::request();
+    $url = explode('?',$request->getRequestUri());
+    $url = $url[0];
+    $path = explode('/', \Drupal::service('path.alias_manager')->getPathByAlias($url));
+    $url = explode('/',$url);
+     
+    // исключить из выборок текущую статью
+    if(isset($path[2]) && isset($path[3]) && in_array($path[2], array('content'))){
+        $news_showed[] = intval($path[3]); 
+    }
+     
+    $body = '';
+    
+    // de_opinions ==================================================================================================
+    $de_opinions = '';
+    $query = \Drupal::entityQuery('node')->condition('type', 'interview')->condition('status', 1)
+        ->condition('field_folders', 1016)
+        ->condition('nid',$news_showed,'NOT IN')
+        ->condition('field_hp_date', cn_shortDBDate())
+        ->sort('field_seq','ASC')
+        ;
+    $nids = $query->execute();
+    
+    if(!count($nids)){
+      $query = \Drupal::entityQuery('node')->condition('type', 'interview')->condition('status', 1)
+        ->condition('field_folders', 1016)
+        ->condition('nid',$news_showed,'NOT IN')
+        ->sort('field_date','DESC')->sort('field_seq','ASC')->sort('created','DESC')->range(0,2);
+        $nids = $query->execute();
+    } 
+     
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $img = cn_renderBlockImage($node->field_image);
+      $lid = cn_renderLid($node->body,300);
+      $person = cn_renderNodePerson($node);
+      $news_showed[] = $node->id();
+      $de_opinions .= '<div class="block-node person"><a href="'.cn_getNodeAlias($node).'">'.$img.$person.'<h4 class="node-title">'.$node->title->value.'</h4><div class="node-text">'.$lid.'</div></a></div>';  
+    }
+    $de_opinions =cn_renderHPblock('de-opinions','Мнение','/digital-economy/opinions',$de_opinions,'gray-bg'); 
+    // de_quotes ==================================================================================================
+    $de_quotes = '';
+    $query = \Drupal::entityQuery('node')->condition('type', 'quote')->condition('status', 1)
+        ->condition('field_folders', 1022)
+        ->condition('nid',$news_showed,'NOT IN')
+        ->condition('field_hp_date', cn_shortDBDate())
+        ->sort('field_seq','ASC')
+        ;
+    $nids = $query->execute();
+
+    if(!count($nids)){
+      $query = \Drupal::entityQuery('node')->condition('type', 'quote')->condition('status', 1)
+        ->condition('field_folders', 1022)
+        ->condition('nid',$news_showed,'NOT IN')
+        ->sort('field_date','DESC')->sort('field_seq','ASC')->sort('created','DESC')->range(0,1);
+        $nids = $query->execute();
+    } 
+
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $img = cn_renderBlockImage($node->field_image);
+      $lid = cn_renderLid($node->body,30000);
+      $person = '<div class="node-person">'.cn_renderPerson($node->title->value,false).'</div>';
+      $news_showed[] = $node->id();
+      $de_quotes .= '<div class="block-node person"><a href="'.cn_getNodeAlias($node).'">'.$img.$person.'<div class="node-text">'.$lid.'</div></a></div>';  
+    }
+    $de_quotes = cn_renderHPblock('de-quotes','Цитата дня','/digital-economy/quotes',$de_quotes,'gray-bg'); 
+    /*    
+    // de_news ==================================================================================================
+    $de_news = '';
+    $query = \Drupal::entityQuery('node')->condition('type', 'article')->condition('status', 1)
+        ->condition('field_folders', 1012)
+        ->condition('nid',$news_showed,'NOT IN')
+        ->condition('field_hp_date', cn_shortDBDate())
+        ->sort('field_seq','ASC')
+        ;
+    $nids = $query->execute();
+
+    if(!count($nids)){
+      $query = \Drupal::entityQuery('node')->condition('type', 'article')->condition('status', 1)
+        ->condition('field_folders', 1012)
+        ->condition('nid',$news_showed,'NOT IN')
+        ->sort('field_date','DESC')->sort('field_seq','ASC')->sort('created','DESC')->range(0,7);
+        $nids = $query->execute();
+    } 
+
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    
+    foreach($nodes as $node){
+      $news_showed[] = $node->id();
+      $de_news .= '<div class="block-node small"><a href="'.cn_getNodeAlias($node).'"><h4 class="node-title">'.$node->title->value.'</h4></a></div>';  
+    }
+    $de_news =cn_renderHPblock('de-news','Цифровая экономика','/digital-economy/news',$de_news,'white-bg'); 
+    */
+    
+
+    $out = $de_opinions.cn_renderBannerSite('bn0033',0).cn_renderBannerSite('bn0034',0).'<br>'.$de_quotes;  
+    return $out;
+}
+
+
+
+
+function cn_convertDateToStorageFormat($t){
+    if(cn_isValidTimeStamp($t)){
+        $t = date('Y-m-d H:i:s',$t);
+    } else {
+        $t = strtotime($t);
+        $t = date('Y-m-d H:i:s',$t);
+    }
+    
+    $dtime = DateTime::createFromFormat('Y-m-d H:i:s',$t, new DateTimeZone('Europe/Moscow'));
+    $dtime->setTimezone(new \DateTimezone(Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::STORAGE_TIMEZONE));
+     
+    return $dtime->format('Y-m-d\TH:i:s');
+}
+
+function cn_convertDateFromStorageFormat($t, $f = 'd.m.Y H:i:s'){
+
+    $dtime = DateTime::createFromFormat('Y-m-d\TH:i:s',$t, new \DateTimezone(Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::STORAGE_TIMEZONE));
+    $dtime->setTimezone(new DateTimeZone('Europe/Moscow'));
+    
+    return $dtime->format($f);
+}
+function cn_lidZero($str,$len){
+
+	$str = '0000000000000'.$str;
+	return substr($str,strlen($str)-$len,$len);
+}
+
+function cn_dates($t1,$t2){
+    $dates = '';
+    if( ((string) (int) $t1 === $t1) && ($t1 <= PHP_INT_MAX) && ($t1 >= ~PHP_INT_MAX)){
+        $d1 = $t1;
+    } else {
+        $d1 = strtotime($t1);
+    }
+    if( ((string) (int) $t2 === $t2) && ($t2 <= PHP_INT_MAX) && ($t2 >= ~PHP_INT_MAX)){
+        $d2 = $t2;
+    } else {
+        if(!empty($t2)) $d2 = strtotime($t2); else $d2 = '';
+    }
+
+		if ($d2 == '' || $d1 == $d2){
+			$dates = '<span class="day">'.date('d',$d1).'</span> '.cn_month($d1,'января').' '.date('Y',$d1).' года';	
+		}	else {
+			if (date('Y',$d1) != date('Y',$d2)) $dates = '<span class="day">'.date('d',$d1).'</span> '.cn_month($d1,'января').' '.date('Y',$d1).' года <p>-</p> <span class="day">'.date('d',$d2).'</span> '.cn_month($d2,'января').' '.date('Y',$d2).' года';
+			else if (date('n',$d1) != date('n',$d2)) $dates = '<span class="day">'.date('d',$d1).'</span> '.cn_month($d1,'января').' <p>-</p> <span class="day">'.date('d',$d2).'</span> '.cn_month($d2,'января').' '.date('Y',$d2).' года';	
+			else $dates = '<span class="day">'.date('d',$d1).' - '.date('d',$d2).'</span> '.cn_month($d1,'января').' '.date('Y',$d1).' года';	
+		}	 
+	
+	return $dates;	
+} 
+
+function cn_renderExhibitions($d1,$d2,$n = 0){
+    $out = '';
+    
+    $country = \Drupal::request()->query->get('country');
+    $city = \Drupal::request()->query->get('city');
+    
+    $query = \Drupal::entityQuery('node')
+        ->condition('type', 'event')
+        ->condition('status', 1);
+    if(!empty(trim($city))){
+        $query->condition('field_city', trim($city),'CONTAINS');    
+    }
+    if(!empty(trim($country))){
+        $query->condition('field_country', trim($country),'CONTAINS');    
+    }
+    $query->condition('field_start_date', date('Y-m-d',strtotime($d1)),'>=')
+        ->condition('field_start_date', date('Y-m-d',strtotime($d2)),'<')->sort('field_start_date','ASC')
+        ;
+    $nids = $query->execute();
+    
+    $month = date('m',strtotime($d1));
+    $year = date('Y',strtotime($d1));
+
+
+    $out .= '
+    <div class="exhibitions-form">
+    <select class="form-select form-control" id="e-month">
+    <option value="01" '.trim($month == '01'?'selected':'').'>Январь</option>
+    <option value="02" '.trim($month == '02'?'selected':'').'>Февраль</option>
+    <option value="03" '.trim($month == '03'?'selected':'').'>Март</option>
+    <option value="04" '.trim($month == '04'?'selected':'').'>Апрель</option>
+    <option value="05" '.trim($month == '05'?'selected':'').'>Май</option>
+    <option value="06" '.trim($month == '06'?'selected':'').'>Июнь</option>
+    <option value="07" '.trim($month == '07'?'selected':'').'>Июль</option>
+    <option value="08" '.trim($month == '08'?'selected':'').'>Август</option>
+    <option value="09" '.trim($month == '09'?'selected':'').'>Сентябрь</option>
+    <option value="10" '.trim($month == '10'?'selected':'').'>Октябрь</option>
+    <option value="11" '.trim($month == '11'?'selected':'').'>Ноябрь</option>
+    <option value="12" '.trim($month == '12'?'selected':'').'>Декабрь</option>
+    </select>
+    <select class="form-select form-control" id="e-year">
+    <option value="'.intval(date('Y')-1).'" '.trim($year == intval(date('Y')-1)?'selected':'').'>'.intval(date('Y')-1).'</option>
+    <option value="'.date('Y').'" '.trim($year == date('Y')?'selected':'').'>'.date('Y').'</option>
+    <option value="'.intval(date('Y')+1).'" '.trim($year == intval(date('Y')+1)?'selected':'').'>'.intval(date('Y')+1).'</option>
+    </select>
+    <input type="text" placeholder="Страна" id="e-country" value="'.cn_t($country).'" class="form-control form-input"/>
+    <input type="text" placeholder="Город" id="e-city" value="'.cn_t($city).'" class="form-control form-input"/>
+    <button id="form-btn"></button>
+    </div>
+    ';
+
+
+    if(count($nids)){
+      $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+      $nodes = $node_storage->loadMultiple($nids);
+      $out .= '<div class="exhibitions">';
+      $curr = 1;
+      $l = 0;
+      foreach($nodes as $node){
+        $out .= '<div class="exhibition"><div class="dates"><div>'.cn_dates($node->field_start_date->value,$node->field_end_date->value).'</div></div><div class="body"><a href="/exhibition/'.$node->id().'">'.$node->title->value.'</a><div class="geo">'.$node->field_country->value.trim(!empty($node->field_city->value)?', '.$node->field_city->value:'').'</div></div></div>';
+        if($curr != count($nodes)){
+            if($l == 2){
+                $bn = cn_renderBannerSite('bnExhibitions',$n);
+                if($bn) $out .= $bn; else $out .= '<div class="exhibition-separator"></div>';
+                $n++;
+                $l = -1;
+            } else $out .= '<div class="exhibition-separator"></div>';  
+        }   
+        $curr++;
+        $l++;
+      }
+      $out .= '</div>';
+    } else {
+        $out .='<h3 class="exhibitions-not-found">Нет мероприятий, удовлетворяющих заданным критериям поиска</h3>';
+    }
+    return $out;
+}
+
+function cn_createTodayBRCache(){
+    $res = false;
+    try{
+	$ctx = stream_context_create(array('http'=> array('timeout' => 30,),"ssl"=>array("verify_peer"=>false, "verify_peer_name"=>false,),));
+	$content = file_get_contents('https://whoiswho.comnews.ru/people5.php?mode=week2019',false,$ctx); //hp2019   
+    $res = file_put_contents ('/var/www/comnews2019/cache/normal/bd-hp'.date('Y-m-d').'.html',$content);
+    
+    } catch(Exception $e){
+
+    }   
+    return $res; 
+}
+
+function cn_getTodayBR(){
+
+	if(!file_exists('/var/www/comnews2019/cache/normal/bd-hp'.date('Y-m-d').'.html')) cn_createTodayBRCache();
+	$out = file_get_contents ('/var/www/comnews2019/cache/normal/bd-hp'.date('Y-m-d').'.html');
+	return $out;
+}
+
+
+
+function cn_month($date = NULL, $padeg = 'январь', $lang = 'ru'){
+	if ($date == NULL) $date = time();
+	if ($lang == 'ru'){
+		if ($padeg == 'января') $months = array("","января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря");
+		else if ($padeg == 'январе') $months = array("","январе","феврале","марте","апреле","мае","июне","июле","августе","сентябре","октябре","ноябре","декабре");
+		else $months = array("","январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь");
+	} else {
+		if ($padeg == 'full') $months = array("","January","February","March","April","May","June","July","August","September","October","November","December");
+		else if ($padeg == 'short') $months = array("","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
+	}
+	return $months[date("n",$date)];
+}
+
+function cn_t($t){
+	return htmlspecialchars($t);	
+}
+function cn_text($t){
+	
+	return check_markup($t,'plain_text');	
+}
+
+function cn_getMetaTags(){
+    if(isset($_REQUEST['cn-meta-tags']) && is_array($_REQUEST['cn-meta-tags'])) {
+        return $_REQUEST['cn-meta-tags'];
+    } 
+    return array();   
+}
+function cn_getMetaTag($name){
+    if(!isset($_REQUEST['cn-meta-tags']) || !is_array($_REQUEST['cn-meta-tags'])) $_REQUEST['cn-meta-tags'] = array();
+    if(isset($_REQUEST['cn-meta-tags'][$name])) return $_REQUEST['cn-meta-tags'][$name];
+    return '';
+}
+function cn_setMetaTag($name, $value){
+    if(!isset($_REQUEST['cn-meta-tags']) || !is_array($_REQUEST['cn-meta-tags'])) $_REQUEST['cn-meta-tags'] = array();
+    $_REQUEST['cn-meta-tags'][$name] = '<meta '.$name.' content="'.cn_t($value).'"/>';
+}
+
+
+function cn_renderHPBlock($id = '', $title = '', $url = '' , $body = '', $classes = ''){
+    $out = '';
+    if(!empty($body)){
+        if(empty($url)){
+            $out .= '<div id="'.$id.'" class="hp-block '.$classes.'"><h3 class="hp-block-title"><div>'.$title.'</div></h3><div class="hp-block-body">'.$body.'</div></div>';
+        } else {
+            $out .= '<div id="'.$id.'" class="hp-block '.$classes.'"><a href="'.$url.'"><h3 class="hp-block-title"><div>'.$title.'</div></h3></a><div class="hp-block-body">'.$body.'</div></div>';
+        }
+    }
+    return $out;
+}
+function cn_isValidTimeStamp($timestamp)
+{
+    return ((string) (int) $timestamp === (string) $timestamp) 
+        && ($timestamp <= PHP_INT_MAX)
+        && ($timestamp >= ~PHP_INT_MAX);
+}
+function cn_shortDBDate($d = null){
+    
+    if($d === null) $d = time();
+    //ksm(date('Y-m-d',$d),$d, cn_isValidTimeStamp($d));
+    if(!cn_isValidTimeStamp($d)){
+        $d = strtotime($d);
+    }
+    //ksm(date('Y-m-d',$d),$d);
+    return date('Y-m-d',$d);
+}
+function cn_getImgUrl($style,$fieldObject){
+    $out = '';
+    if($fieldObject && count($fieldObject->getValue())){
+        $out = cn_getImgStyleUrl($style,$fieldObject->entity->getFileUri());
+    }
+    return $out;
+}
+
+function cn_getImgStyleUrl($style,$uri){
+    $out = '';
+    $styleObj = \Drupal\image\Entity\ImageStyle::load($style);
+    if(!empty($style) && $styleObj){
+        $out = $styleObj->buildUrl($uri);
+        
+    } else {
+        $out = file_create_url($uri);
+    }
+    return str_replace('http://www.comnews.ru','https://www.comnews.ru',$out);
+}
+
+function cn_renderBlockImage($field,$class = 'node',$url = ''){
+    $tmp = '';
+    if(isset($field) && count($field->getValue())){
+        $alt = $field->alt;
+        $title = $field->title;
+        if(!empty($alt)){
+            $alt = ' alt="'.cn_t($alt).'" title="'.cn_t($alt).'" ';
+        }
+        if(!empty($title)){
+            $title = '<div class="image-caption">'.cn_t($title).'</div>';
+        }
+        $img = '<img src="'.cn_getImgUrl(BLOCK_IMAGE_STYLE,$field).'" '.$alt.' />';
+        if(!empty($url)) $img = '<a href="'.$url.'">'.$img.'</a>'; 
+        $tmp = '<div class="'.$class.'-img">'.$img.$title.'</div>';
+    }    
+    return $tmp;
+}
+function cn_renderImage($field,$style = 'large',$classes = 'field-name-image',$url = '', $a_attrs = ''){
+    $tmp = '';
+    if(count($field->getValue())){
+        $alt = $field->alt;
+        $title = $field->title;
+        if(!empty($alt)){
+            $alt = ' alt="'.cn_t($alt).'" title="'.cn_t($alt).'" ';
+        }
+        if(!empty($title)){
+            $title = '<div class="image-caption">'.cn_t($title).'</div>';
+        }
+        $img = '<img src="'.cn_getImgUrl($style,$field).'" '.$alt.' />';
+
+        if(!empty($url)) $img = '<a '.$a_attrs.' href="'.$url.'">'.$img.'</a>';
+        $tmp = '<div class="field field-image '.$classes.'"><div class="field-items"><div class="field-item">'.$img.$title.'</div></div></div>';
+    }    
+    return $tmp;
+}
+function cn_renderField($value,$classes = 'field-name-text',$url = ''){
+    $out = '';
+    if(is_array($value)){
+        if(count($value)){
+            $out .='<div class="field field-text field-multiple '.$classes.'"><div class="field-items">';
+            foreach($value as $val){
+                if(is_array($val)){
+                    $tmp = $val['value'];        
+                } else {
+                    $tmp = $val;        
+                }    
+                
+                if(in_array('person', explode(' ',$classes))){
+                    $tmp = cn_renderPerson($tmp, true);
+                } else if(in_array('source', explode(' ',$classes))){
+                    $tmp = cn_renderSource($tmp,true);
+                } else if(in_array('full-html', explode(' ',$classes))){
+                    //$tmp = $tmp; выводим как есть
+                    $tmp = check_markup($tmp,'full_html');
+                } else $tmp = cn_t($tmp);
+                $out .= '<div class="field-item">'.$tmp.'</div>';
+            }    
+            $out .='</div></div>';
+        }
+    } else if(!empty(trim($value))){
+        if(!empty($url)){ 
+            $tmp = '<a href="'.$url.'">'.cn_t($value).'</a>';
+        } else{
+            $tmp = $value;
+            if(in_array('person', explode(' ',$classes))){
+                $tmp = cn_renderPerson($tmp, true);
+            } else if(in_array('source', explode(' ',$classes))){
+                $tmp = cn_renderSource($tmp,true);
+            } else if(in_array('full-html', explode(' ',$classes))){
+                //$tmp = $tmp; выводим как есть
+                $tmp = check_markup($tmp,'full_html');
+            } else $tmp = cn_t($tmp);
+        } 
+        $out .= '<div class="field field-text '.$classes.'"><div class="field-items"><div class="field-item">'.$tmp.'</div></div></div>';
+    }    
+    return $out;
+}
+function cn_renderNodePerson($node, $withLink = FALSE, $qnt = 1, $class = 'node'){
+    $out = '';
+    $field = $node->get('field_authors');
+    if(isset($node->field_i_persons) && count($node->field_i_persons->getValue())){    
+        $field = $node->get('field_i_persons');
+    }
+    
+    $i = 1;
+    foreach($field->getValue() as $person){
+        $out .= '<div class="'.$class.'-person">';
+        $out .= cn_renderPerson($person['value'],$withLink);
+        $out .= '</div>';
+        $i++;
+        if($i > $qnt) break;
+    }
+    return $out;
+}
+function cn_renderPerson($person = 'name;e-mail;job',$withLink = false){
+    $out = '';
+    $p = explode(';',$person);
+     
+    if(count($p) == 1){
+        $p = explode(',',$p[0]);
+        if(count($p) > 1){
+            $out .= '<span>'.str_replace(' ',' <br> ',cn_t($p[0])).'</span> <br/> '.cn_t($p[1]);    
+        } else $out .= '<span>'.str_replace(' ',' <br/> ',cn_t($p[0])).'</span>';
+    } else if(count($p) == 2){
+        if(filter_var($p[1], FILTER_VALIDATE_EMAIL))
+            $out .= '<span><a href="mailto:'.cn_t($p[1]).'">'.str_replace(' ',' <br/> ',cn_t($p[0])).'</a></span>';
+        else 
+            $out .= '<span>'.str_replace(' ',' <br/> ',cn_t($p[0])).'</span> </br> '.cn_t($p[1]);
+    } else{
+        if($withLink)
+            $out .= '<span><a href="mailto:'.cn_t($p[1]).'">'.str_replace(' ',' <br/> ',cn_t($p[0])).'</a></span> </br> '.cn_t($p[2]);
+        else 
+        $out .= '<span>'.str_replace(' ',' <br/> ',cn_t($p[0])).'</span> </br> '.cn_t($p[2]);    
+    }
+    $out = str_replace('   ','<br class="br"/>',$out);  
+    return $out;
+}
+
+function cn_renderSource($source = 'name;url',$withLink = true){
+    $out = '';
+    $p = explode(';',$source);
+    if(count($p) == 1){
+        $out .= '<span>'.cn_t($p[0]).'</span>';
+    } else if(count($p) == 2){
+        if($withLink)
+            $out .= '<span><a href="'.cn_t($p[1]).'">'.cn_t($p[0]).'</a></span>';
+        else 
+            $out .= '<span>'.cn_t($p[0]).'</span>';    
+    }
+    return $out;
+}
+
+function cn_renderNodeDETags($node,$class = 'node'){
+    global $detags;
+    $out = '<div class="'.$class.'-de-tags">';
+    foreach($node->get('field_de_industry')->getValue() as $tid){
+        if(!in_array($tid['target_id'], array(1034,1042))){ // hidden tag 
+            if(isset($detags[$tid['target_id']])){
+                $term = $detags[$tid['target_id']];
+            } else {
+                $term = \Drupal\taxonomy\Entity\Term::load(intval($tid['target_id']));
+                $detags[$tid['target_id']] = $term;
+            }
+            $c = explode(';',$term->field_de_color->value);
+            $c = $c[1];
+            $out .= '<a style="color:'.$c.';" href="/digital-economy/companies'.\Drupal::service('path.alias_manager')->getAliasByPath('/taxonomy/term/'.$term->id()).'">'.$term->name->value.'</a>';
+        }
+    }
+    return $out.'</div>';
+}
+
+function cn_renderNodeTags($node,$class = 'node'){
+    global $tags;
+    $out = '<div class="'.$class.'-tags">';
+    foreach($node->get('field_tags')->getValue() as $tid){
+        if($tid['target_id'] != 1003){ // hidden tag 
+            if(isset($tags[$tid['target_id']])){
+                $term = $tags[$tid['target_id']];
+            } else {
+                $term = \Drupal\taxonomy\Entity\Term::load(intval($tid['target_id']));
+                $tags[$tid['target_id']] = $term;
+            }
+            $out .= '<a href="'.\Drupal::service('path.alias_manager')->getAliasByPath('/taxonomy/term/'.$term->id()).'">'.$term->name->value.'</a>';
+        }
+    }
+    return $out.'</div>';
+}
+
+function cn_renderAdmLinksForNode($id){
+    $out = '';
+    $request = \Drupal::request();
+    $url = $request->getRequestUri();
+    if(cn_isAdmin()){
+        if($id < 200000) $server = 'https://archiv.comnews.ru'; else $server = '';
+        $out = '<div class="admin-links desktop">FB: <a href="/47/'.$id.'">https://www.comnews.ru/47/'.$id.'</a> | TG: <a href="/29/'.$id.'">https://www.comnews.ru/29/'.$id.'</a>  [<a href="'.$server.'/node/'.$id.'/edit?destination='.$url.'">Редактировать...</a>]</div>';
+    }
+    return $out;
+}
+
+function cn_getYoutubeId($url){
+    $id = '';
+    $tmp = explode('/',$url);
+    if ($tmp[3] != 'channel'){
+        
+          $id = explode('?',$url);
+          if (count($id) > 1){
+            $id = $id[1];
+            $ids = explode('&',$id);
+            foreach($ids as $i){ $n = explode('=',$i); if ($n[0] == 'v') {$id = $n[1]; break;}}
+          } else {
+            $id = $tmp[3];
+          }    
+    }
+    return $id;
+}
+
+function cn_getNodeAlias($node){
+    $prefix = 'content';  
+    $folders = $node->get('field_folders')->getValue();
+    foreach($folders as $folder){
+      if(in_array($folder['target_id'],array('1012','1016','1022'))){ // папки статей ЦЭ
+        $prefix = 'digital-economy/content';
+        break;
+      }
+    } 
+    $url = \Drupal::service('path.alias_manager')->getAliasByPath('/node/'.$node->id());
+    if(isset($node->field_old_id->value) && intval($node->field_old_id->value)){
+        $url = explode('/', $url);
+        $url[1] = $prefix;
+        $url[2] = intval($node->field_old_id->value);
+        unset($url[4]);
+        $url = implode('/',$url);
+    } else {
+        if(in_array($node->getType(),array('article','interview','editorial','vopros','pressrelease','quote','review'))){
+            $url = explode('/', $url);
+            $url[1] = $prefix;
+            $url = implode('/',$url);  
+        }
+    }
+    return $url;
+}
+function cn_renderLid($field,$limit,$force = false){
+    $out = '';
+    if(!empty($field->summary)){
+        $out = $field->summary;
+    } else {
+        $out = strip_tags($field->value);
+        $force = true;
+    }
+    if($force){
+        $text = explode(' ',$out);
+        $lim = 0;
+        $out = array();
+        foreach($text as $word){
+            $lim += mb_strlen($word);
+            $out[] = $word;
+            if($lim > $limit) {
+                $out[] = '<span>...</span>';
+                break;
+            }    
+        } 
+        $out = implode(' ',$out);
+    }
+    return $out;
+}
+function cn_getVoprosResults($nid){
+	$out = '';
+	$node = \Drupal\node\Entity\Node::load($nid);
+	if ($node->id() && $node->getType() == 'vopros'){
+		$out .= '<div class="vv-container" rel="'.intval((count($node->get('field_results')->getValue())*70)+20).'" style="height:'.intval((count($node->get('field_results')->getValue())*40)+10).'px;">
+					
+					
+					<table class="vv-grid">
+					<tr class="t1" rel="'.intval(count($node->get('field_results')->getValue())*88).'" style="height:'.intval(count($node->get('field_results')->getValue())*46).'px;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+					<tr class="t2"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+					<tr class="t3"><td>25%</td><td>50%</td><td>75%</td><td>100%</td></tr>
+					</table>
+					<div class="vv-graph">
+				';
+		$all = 0;		   
+		foreach($node->get('field_variants')->getValue() as $i=>$var){ $all = $all + $node->get('field_results')->getValue()[$i]['value'];}		   
+		$y = 0;
+		foreach($node->get('field_variants')->getValue() as $i=>$var){
+			$x = round($node->get('field_results')->getValue()[$i]['value']*100/$all,2);
+			$y = $y + $x;
+		}
+		$y = 100 - $y;
+		foreach($node->get('field_variants')->getValue() as $i=>$var){
+			$x = round($node->get('field_results')->getValue()[$i]['value']*100/$all,2);
+			if ($y != 0) {$x = $x + $y; $y = 0;}
+			
+			$out .= '
+					<div class="vv-bar" title="'.str_replace('"','&quot;',$var['value']).'" style="width:'.$x.'%;">'.$x.'%</div>
+					<div class="vv-label" title="'.str_replace('"','&quot;',$var['value']).'">'.$var['value'].'</div>
+					';
+			
+		}		
+		$out .= '
+			</div>
+			</div>';
+		
+	}
+	
+	return $out;
+	
+	
+}
+function cn_renderVoprosForm($nid){
+	$out = '';
+	$node = \Drupal\node\Entity\Node::load($nid);
+	if ($node->id()){
+		
+		foreach($node->get('field_variants')->getValue() as $i=>$var){
+			$out .= '
+				<div class="row"><input type="radio" name="v'.$node->id().'" value="'.intval($i+1).'" id="v_'.$node->id().'_'.$i.'"/><label for="v_'.$node->id().'_'.$i.'">'.$var['value'].'</label></div>
+			';	
+        }	
+        if(cn_bnScope() == 'comnews-hp') $a = '<a href="/polls">Архив</a>'; else $a = '';	
+		$out .= '
+			<div class="btns"><a class="send2019" id="hpgraph_send" href="javascript:void(0);">Ответить</a>'.$a.'</div>
+		';
+	}
+	
+	return $out;
+} 
+
+function cn_renderStandartContacts(){
+    return '
+    <h3>Контакты:</h3>
+        <div class="contacts r1"><p>107140, Москва,<br>Верхняя Красносельская ул., д. 2/1, строение 1, офис 426.<br>Тел.: +7 495 933 5483, +7 495 933 5485</p></div>
+        <div class="contacts r2"><p>190013, Санкт-Петербург,<br>Московский пр., д. 22, литера Л, помещение 34Н<br>Тел.: +7 812 670 2030</p></div>
+        <h4>Ваши замечания, пожелания, идеи, пожалуйста, направляйте редактору журнала «Стандарт» Ксении Прудниковой <a href="mailto:ks.prudnikova@comnews.ru">ks.prudnikova@comnews.ru</a></h4>
+    ';
+
+}
+
+function cn_renderStandartLinksBlock(){
+    $out = '
+    <div class="standart-links">
+        
+        <a class="buy b2"  href="/standart/buy-online">Купить печатную версию</a>
+        <h4>Мобильное приложение Стандарт</h4>
+        <a class="app b1" href="https://play.google.com/store/apps/details?id=com.quazarteam.StandartRUS" target="_blank"><img src="/themes/site/img/qr-code-google.gif" style="width:135px;" class="desktop"/><br><img src="/img/3/google.gif" title="© Google Inc., 2019. Все права защищены. Google Play является товарным знаком Google Inc."></a>
+        <a class="app b2" href="https://itunes.apple.com/us/app/standart/id1189483127" target="_blank"><img src="/themes/site/img/qr-code-apple.gif" style="width:135px;" class="desktop"/><br><img src="/img/3/app.png" title="© Apple и логотип Apple являются зарегистрированными товарными знаками компании Apple Inc. в США и других странах. App Store является сервисным знаком компании Apple Inc."></a>
+        <!--
+        <a class="app b3" href="https://play.google.com/store/apps/details?id=com.quazarteam.StandartENG" target="_blank"><img src="/img/3/google_en.png" title="© Google Inc."></a>
+        <a class="app b4" href="https://itunes.apple.com/us/app/standard-by-comnews/id1196672425" target="_blank"><img src="/img/3/appstore_en.png" title="© Apple"></a> -->
+    </div>
+    '; //<a class="buy b1" href="/standart/buy-pdf-online">Купить журнал в PDF</a>
+
+
+    return $out;
+}
+
+function cn_MonthCalendar($cd,$type = ''){
+        $out = '';
+        if (!$cd) {$cd = time();}
+		$d1 = strtotime(date('Y-m-d 06:00:00',$cd).' - 1 month');
+		$d2 = strtotime(date('Y-m-d 06:00:00',$cd).' + 1 month');
+		
+		$cd = strtotime(date('Y-m-d 06:00:00',$cd));
+		$now = strtotime(date('Y-m-d 06:00:00'));
+        
+        if($type != ''){
+            $c_months = '';
+            for($i=1;$i<13;$i++){
+                $c_months .= '<option value="'.cn_lidZero($i,2).'" '.(cn_lidZero($i,2)==date('m',$cd)?' selected ':'').'>'.cn_month(strtotime('2019-'.cn_lidZero($i,2).'-01')).'</option>';
+            }
+            for($i=intval(date('Y'));$i > 2007; $i--){
+                $c_years .= '<option value="'.$i.'" '.($i==date('Y',$cd)?' selected ':'').'>'.$i.'</option>';
+            }
+            $label = '<select id="calendar-month" class="form-select form-control">'.$c_months.'</select>&nbsp;<select id="calendar-year" class="form-select form-control">'.$c_years.'</select>';
+        } else {
+            $label = cn_month($cd).'&nbsp;&nbsp;'.date("Y",$cd);
+        }
+
+
+		$out .= '<div class="calendarCtrls">';
+		$out .= '<div><a href="javascript:void(0);" rel="'.$d1.'" id="calendarPrev"><img src="/img/3/nav-prev.png" width="24" height="24" border="0" /></a></div><div class="c-label">'.$label.'</div><div><a href="javascript:void(0);" rel="'.$d2.'" id="calendarNext"><img src="/img/3/nav-next.png" width="24" height="24" border="0" /></a></div>';
+			
+			
+		$out .= '</div><div class="clear"></div>';
+		
+		
+		$out .= '<div class="calendarTable"><div class="week head"><div>Пн.</div><div>Вт.</div><div>Ср.</div><div>Чт.</div><div>Пт.</div><div>Сб.</div><div>Вс.</div></div>';
+	
+		$cmonth = date("n",$cd);
+		$t = date("t",$cd);
+		$fdm = strtotime(date("Y",$cd).'-'.date("m",$cd).'-01');
+		$ldm = strtotime(date("Y",$cd).'-'.date("m",$cd).'-'.$t);
+		
+		$w1 = date("w",$fdm);
+		if ($w1 == 0) {$w1=7;}
+		$w1 = $w1-2;
+		
+		$w2 = date("w",$ldm);
+		if ($w2 == 0) {$w2=7;}
+		$w2 = $t + 7 - $w2;
+		$d = - $w1;
+		$dw = 1;
+		while ($d <= $w2){
+			if (strtotime(date("Y",$cd).'-'.date("m",$cd).'-'.cn_lidZero($d,2).' 23:59:59') < $now){
+				$tag = 'a';	
+				$class=' link ';
+			} else {
+				$tag = 'span';
+				$class = '';
+			}
+			if ($dw == 1) {
+				$out .= '<div class="week">';	
+            }
+            
+            if(strtotime(date("Y",$cd).'-'.date("m",$cd).'-'.cn_lidZero($d,2)) < strtotime('2019-10-07')){
+                $url = 'https://archiv.comnews.ru/h.php?d='.date("Y",$cd).'-'.date("m",$cd).'-'.cn_lidZero($d,2);
+                $target = ' target="_blank" ';
+            } else {
+                $url = '/arhiv/calendar/'.date("Y",$cd).'-'.date("m",$cd).'-'.cn_lidZero($d,2);
+                $target = '';
+            }
+            $act = '';
+            //if($d == date('d',$cd)) $act = ' current-date '; 
+
+
+			if ($d <=0 || $d > $t) {
+				$out .= '<div class="ed">&nbsp;</div>';
+			} else  {
+				if (cn_isWorkday(strtotime(date("Y",$cd).'-'.date("m",$cd).'-'.cn_lidZero($d,2))) ) { //$dw < 6){
+					$out .= '<'.$tag.' href="'.$url.'" '.$target.'><div class="wd'.$class.$act.'" rel="'.date("Y",$cd).'-'.date("m",$cd).'-'.cn_lidZero($d,2).'">'.$d.'</div></'.$tag.'>';
+				} else {
+                    if(strtotime(date("Y",$cd).'-'.date("m",$cd).'-'.cn_lidZero($d,2)) < strtotime('2019-10-07')){
+                        $out .= '<'.$tag.' href="'.$url.'" '.$target.'><div class="hd'.$class.$act.'" rel="'.date("Y",$cd).'-'.date("m",$cd).'-'.cn_lidZero($d,2).'">'.$d.'</div></'.$tag.'>';
+                    } else {
+                        $tag = 'span';
+				        $class = '';
+                        $out .= '<'.$tag.' href="'.$url.'"><div class="hd'.$class.$act.'" rel="'.date("Y",$cd).'-'.date("m",$cd).'-'.cn_lidZero($d,2).'">'.$d.'</div></'.$tag.'>';
+                    }
+				}
+			}
+			
+			
+			if ($dw == 7) {
+				$out .= '</div>';	
+				$dw = 0;
+			}
+			$dw++;
+			$d++;
+		}
+		$out .= '</div>';	
+        return $out;
+}
+
+function cn_getMorphy(){
+
+    require_once( '/var/www/phpmorph/src/common.php');
+    $dir = '/var/www/phpmorph/dicts';
+    $lang = 'ru_RU';
+    $opts = array(
+        'storage' => PHPMORPHY_STORAGE_FILE,
+    );
+    try {
+        return new phpMorphy($dir, $lang, $opts);
+    } catch(phpMorphy_Exception $e) {
+        \Drupal::logger('comnews')->error('Error occured while creating phpMorphy instance: ' . $e->getMessage(), array());
+        //ksm();
+    }
+    return false;
+}
+
+function cn_updateSearchIndex($node){
+    $res = true;
+    
+    if(!in_array($node->getType(),array('article','interview','editorial','quote','pressrelease','vopros','review'))) return false;
+
+    if($node->isPublished()){
+    
+        $body = strip_tags($node->title->value.' '.$node->body->value); // все тексты из ноды для индексации
+        if($node->hasField('field_alt_title')){
+            $body .= ' '.$node->field_alt_title->value;
+        }
+        if($node->hasField('field_authors')){
+            foreach($node->field_authors->getValue() as $item)
+                $body .= ' '.cn_getVal($item['value']);
+        }
+        if($node->hasField('field_i_persons')){
+            foreach($node->field_i_persons->getValue() as $item)
+                $body .= ' '.cn_getVal($item['value']);
+        }
+        if($node->hasField('field_source')){
+            foreach($node->field_source->getValue() as $item)
+                $body .= ' '.cn_getVal($item['value']);
+        }
+        if($node->hasField('field_variants')){
+            foreach($node->field_variants->getValue() as $item)
+                $body .= ' '.cn_getVal($item['value']);
+        }
+        if($node->hasField('field_image_text')){
+            $body .= ' '.$node->field_image_text->value;
+        }
+
+        $words = cn_getWords($body);
+        $base_forms = cn_getBaseForms($words,true);
+        $path = explode('/',cn_getNodeAlias($node));
+        unset($path[0]);
+        $path = implode('/',$path);
+
+
+        $query = \Drupal::database()->upsert('a_search');
+        $query->fields(['nid', 'date', 'title', 'path', 'body', 'morphy']);
+        $query->values([
+            $node->id(), 
+            strtotime(cn_convertDateFromStorageFormat($node->field_date->value,'Y-m-d 00:00:00')),
+            $node->title->value,
+            $path,
+            $body,
+            $base_forms
+        ]);
+        $query->key('nid');
+        $query->execute();
+        
+        //break;
+
+    } else {
+        
+        $query = \Drupal::database()->delete('a_search');
+        $query->condition('nid', $node->id());
+        $query->execute();
+
+    }
+
+
+
+    return $res;
+}
+
+function cn_getWords($body,$toUpper = true){
+    if($toUpper)
+        return explode(' ',preg_replace('/[^A-ZА-Я0-9]/iu',' ',strip_tags(mb_strtoupper($body))));
+    else return explode(' ',preg_replace('/[^A-ZА-Я0-9]/iu',' ',strip_tags($body)));    
+}
+/**
+ * по заданному массиву слов возвращает массив с массивами базовых форм исходных слов 
+ *  или строку в формате "|word1| |word2| |word3.1|word3.2| |word4| ..."
+ */
+function cn_getBaseForms($words,$toString = false){
+    $morphy = cn_getMorphy();
+    $base_forms = array();
+    foreach($words as $n => $word){
+            $w = trim($word);
+            $Ls = $morphy->lemmatize($w); // базовые формы слова
+            if($Ls !== FALSE){
+                $tmp = array();
+                foreach($Ls as $L){
+                    $ignore = FALSE;
+                    $pos = $morphy->getPartOfSpeech($L); // части речи
+                    if($pos !== FALSE && $pos !== NULL)
+                        foreach($pos as $f){
+                            if(in_array($f,array('ПРЕДК','ПРЕДЛ','СОЮЗ','МЕЖД','ЧАСТ'))){ // игнорируем предлоги и т.д.
+                                $ignore = TRUE;
+                                break;
+                            }
+                        }
+                    if($ignore){
+                        //$tmp[] = $w; // ??????????????
+                    } else {
+                        $tmp[] = $L;
+                    }
+                }
+                if($toString) $base_forms[] = '|'.implode('|',$tmp).'|';
+                    else $base_forms[] = $tmp;
+            } else {
+                // слова нет в словаре 
+                if($toString) $base_forms[] = '|'.$w.'|';
+                    else $base_forms[] = array($w);
+            }
+        
+    }
+    if($toString) return implode(' ', $base_forms);
+        else return $base_forms;
+}
+
+/**
+ * по заданному тексту, для каждого слова возвращает массив - ключ = базовая форма слова, значение - массив всех форм слова
+ */
+function cn_getSearchBaseForms($body,$withAllForms = true){
+    $words = cn_getWords($body);
+    $count = 0;
+    $morphy = cn_getMorphy();
+    $base_forms = array();
+    foreach($words as $word){
+        if(!empty(trim($word))){
+            $count++;
+            $w = trim($word);
+            
+            $Ls = $morphy->lemmatize($w); // базовые формы слова
+            if($Ls !== FALSE){
+                foreach($Ls as $L){
+                    
+                    if(isset($base_forms[$L])){
+                        // уже есть
+                    } else {
+                        $ignore = FALSE;
+                        $pos = $morphy->getPartOfSpeech($L); // части речи
+                        if($pos !== FALSE && $pos !== NULL)
+                            foreach($pos as $f){
+                                if(in_array($f,array('ПРЕДК','ПРЕДЛ','СОЮЗ','МЕЖД','ЧАСТ'))){ // игнорируем предлоги и т.д.
+                                    $ignore = TRUE;
+                                    break;
+                                }
+                            }
+                        if($ignore) continue;
+                        if($withAllForms) $base_forms[$L] = $morphy->getAllForms($L); // все формы слова по базовой форме
+                            else $base_forms[$L] = array();
+                    }
+                }
+            } else {
+                // слова нет в словаре 
+                if(((string)$w !== (string)intval($w)) && mb_strlen($w) > 1) { // не пишем цыфры и одинокие буквы
+                    $base_forms[$w] = array();
+                }
+            }
+        }
+    }
+    //ksm($count); ksm(count($base_forms));
+    return $base_forms;
+
+}
+/**
+   * баннер стандарта
+   */
+function renderStandartBanner($show = true){
+    $body = '';
+
+    if($show){
+        $query = \Drupal::entityQuery('node')
+        ->condition('type', 'standart')
+        ->condition('status', 1)->sort('field_seq','DESC')->range(0,1);  
+        $nids = $query->execute();
+        $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+        $nodes = $node_storage->loadMultiple($nids);
+        
+        foreach($nodes as $node){
+            $pdf = '';
+            if($node->id() && $node->isPublished() && count($node->get('field_issue_pdf'))){
+                foreach($node->get('field_issue_pdf') as $f){
+                    $pdf = 'https://www.comnews.ru'.$f->entity->createFileUrl();
+                    
+                }
+            } else 
+            
+                if($node->id() && $node->isPublished() && $node->field_free_pdf->value != ''){
+                    
+                    $pdf = 'https://www.comnews.ru'.$node->field_free_pdf->value;
+                    
+                }
+    
+            if($pdf != ''){
+                $pdf = '<a style="display: block; width: 250px; text-align:center; height: 30px; line-height: 30px;   border-radius: 5px; background-color: #be0027; color: #fff; font-size: 20px; margin: 15px auto; text-decoration:none!important;" href="/getissue.php?m=preview-pdf&id='.$node->id().'" target="_blank">Скачать PDF</a>';
+            }        
+            $body .= '
+                <div id="standart" class="hp-block gray-bg">
+                <a href="/standart/issue/'.(intval($node->field_old_id->value) > 0 ? $node->field_old_id->value : $node->id()).'">
+                <h3 style="color:#be0027;text-transform:uppercase;margin-top:16px;font-size:18px;">Уважаемые читатели!<br>
+                Доступна бесплатная электронная версия журнала «Стандарт»</h3>
+                <img style="max-width:100%" src="'.trim($node->field_cover_old->value == ''?cn_getImgUrl('standart_big',$node->field_cover):$node->field_cover_old->value).'"/></a>
+                '.$pdf.'
+                </div>
+            
+            ';
+        }
+    }
+    return $body;
+  }
+
+/**
+ * /test page cobtroller
+ */
+function cn_test(){
+
+    $out = '';
+    //include_once('misc.php');
+    //$out = cn_createQuotes();
+    
+    /*
+    $query = \Drupal::entityQuery('node')->condition('status', 1)
+        ->condition('type', array('standart','page','banner','casestudy','file','event'),'NOT IN')
+        ->condition('field_old_id', 0);  
+    $nids = $query->execute();
+
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+
+    foreach($nodes as $node){
+        $node->save();
+    }
+    */
+    //$node = \Drupal\node\Entity\Node::load(202291);
+    //cn_updateSearchIndex($node);
+
+    //$out = check_markup($node->body->value,'full_html');
+     
+/****************************/
+
+
+    
+/*******************/
+
+    //ksm(cn_getAllBannerSites());
+    //ksm(cn_getAllBanners());
+    /**************************
+    $query = \Drupal::entityQuery('node')->condition('type', 'standart')
+        ->sort('field_number','DESC');
+    $nids = $query->execute();
+     
+
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadMultiple($nids);
+    ksm(count($nodes));
+    foreach($nodes as $node){
+        $num = $node->field_number->value;
+        if(intval($num)){
+            $n = explode('/',$num);
+            if(count($n)==2){
+                $num = cn_lidZero($n[0],3).'/'.cn_lidZero($n[1],3);
+            } else { $num = cn_lidZero($n[0],3);}
+              
+            $out .='<li>'.intval($node->field_number->value).' - '.$num.' === </li>';
+
+            $node->set("field_number", ''.$num);
+            //$node->set("field_cover_old", '/sites/default/files2019/st-old-covers/st ('.intval($node->field_number->value).').jpg');
+            $node->save();
+            $out .= '<li>'.$node->field_number->value.'</li>';
+        }
+    }
+    ***********************/
+    /*
+    34|Беспроводная связь|14|wireless
+33|Фиксированная связь|14|fixed
+    */
+    
+
+    return $out;
+}
+
+
+function cn_sendHTMLMails($to,$subject,$body){
+    $send_mail = new \Drupal\Core\Mail\Plugin\Mail\PhpMail(); // this is used to send HTML emails
+    $from = \Drupal::config('system.site')->get('mail');
+    $message['headers'] = array(
+    'content-type' => 'text/html',
+    'MIME-Version' => '1.0',
+    'reply-to' => $from,
+    'from' => 'ComNews.RU <'.$from.'>'
+    );
+    $message['to'] = $to;
+    $message['subject'] = $subject;
+     
+    $message['body'] = $body;
+     
+    $send_mail->mail($message);
+
+}
+
+/**
+   * 
+   * 
+   * 
+   */
+function cn_renderSForm ($issue){
+
+    //die();
+
+    $output = array();
+    $title = '<div class="s1"><div>Журнал Стандарт <span class="black"> / Форма подписки на журнал</span></div></div>';
+    
+    $output['#title'] = $title;
+    cn_setHTMLTitle($output['#title']);
+    
+    $body = '';
+  
+    $s_type = '1';
+    if ($_POST['s_type'] != '') $s_type = htmlspecialchars($_POST['s_type']);
+    $s_paymethod = '0';
+    if ($_POST['s_paymethod'] != '') $s_paymethod = htmlspecialchars($_POST['s_paymethod']);
+    $s_issue = '';
+    if ($_POST['s_issue'] != '') $s_issue = htmlspecialchars($_POST['s_issue']);
+    $s_issue_start = '';
+    if ($_POST['s_issue_start'] != '') $s_issue_start = htmlspecialchars($_POST['s_issue_start']);
+    $s_issue_end = '';
+    if ($_POST['s_issue_end'] != '') $s_issue_end = htmlspecialchars($_POST['s_issue_end']);
+    $s_fullname = '';
+    if ($_POST['s_fullname'] != '') $s_fullname = htmlspecialchars($_POST['s_fullname']);
+    $s_phone1 = '';
+    if ($_POST['s_phone1'] != '') $s_phone1 = htmlspecialchars($_POST['s_phone1']);
+    $s_phone2 = '';
+    if ($_POST['s_phone2'] != '') $s_phone2 = htmlspecialchars($_POST['s_phone2']);
+    $s_country = '';
+    if ($_POST['s_country'] != '') $s_country = htmlspecialchars($_POST['s_country']);
+    $s_email = '';
+    if ($_POST['s_email'] != '') $s_email = htmlspecialchars($_POST['s_email']);
+    $s_zip = '';
+    if ($_POST['s_zip'] != '') $s_zip = htmlspecialchars($_POST['s_zip']);
+    $s_region = '';
+    if ($_POST['s_region'] != '') $s_region = htmlspecialchars($_POST['s_region']);
+    $s_region2 = '';
+    if ($_POST['s_region2'] != '') $s_region2 = htmlspecialchars($_POST['s_region2']);
+    $s_city = '';
+    if ($_POST['s_city'] != '') $s_city = htmlspecialchars($_POST['s_city']);
+    $s_street = '';
+    if ($_POST['s_street'] != '') $s_street = htmlspecialchars($_POST['s_street']);
+    $s_building = '';
+    if ($_POST['s_building'] != '') $s_building = htmlspecialchars($_POST['s_building']);
+    $s_b_number = '';
+    if ($_POST['s_b_number'] != '') $s_b_number = htmlspecialchars($_POST['s_b_number']);
+    $s_b_number2 = '';
+    if ($_POST['s_b_number2'] != '') $s_b_number2 = htmlspecialchars($_POST['s_b_number2']);
+    $s_b_litera = '';
+    if ($_POST['s_b_litera'] != '') $s_b_litera = htmlspecialchars($_POST['s_b_litera']);
+    $s_office = '';
+    if ($_POST['s_office'] != '') $s_office = htmlspecialchars($_POST['s_office']);
+    $s_company = '';
+    if ($_POST['s_company'] != '') $s_company = htmlspecialchars($_POST['s_company']);
+    $s_companyinfo = '';
+    if ($_POST['s_companyinfo'] != '') $s_companyinfo = htmlspecialchars($_POST['s_companyinfo']);
+    $s_notes = '';
+    if ($_POST['s_notes'] != '') $s_notes = htmlspecialchars($_POST['s_notes']);
+    $s_qnt = '1';
+    if ($_POST['s_qnt'] != '') $s_qnt = htmlspecialchars($_POST['s_qnt']);
+    
+    
+    //$res = cn_processSform($issue);
+    $body .= "
+      <style>
+      .formbox{ width:80%; margin:40px auto; padding:20px; background-color:#f0f0f0; border:solid 2px #e2e2e2;}
+      #success, #success p {text-align:center;padding-top:50px;}
+      .orderform .formbox label {width:auto;float:none;}
+      .formbox .inline {display:inline; margin:0px; font-weight:normal; position:relative; top:-2px }
+      .formbox input[type=text],.formbox input[type=email], .formbox textarea{ width:100%; }
+      .formbox select{ width:250px; }
+      .formbox textarea {height:100px;}
+      .formbox label {font-weight:normal; margin-top:10px; margin-bottom:2px;margin-left:3px;}
+      .formbox #d_issue {margin-top:10px;}
+      .formbox #d_issue label {margin-left:20px;margin-right:5px;}
+      .formbox #s_qnt {display:inline; width: 100px;}
+      .formbox #d_qnt label {display:inline;}
+      .formbox #d_qnt {margin-top:10px;}
+      .formbox #buttons {margin-top:20px; border-top: solid 1px #ccc; text-align:right;padding-top:3px;}
+      #wait {display:none; text-align:center; padding-top:50px;}
+      </style>";
+      
+    if ($res == '0') {
+      $body .= '<div id="success">Спасибо! Ваша заявка принята. <p>В ближайшее время с Вами свяжется сотрудник компании. По вопросам оформленных заявок просьба обращаться по телефонам: (495) 933-5483 или (495) 933-5485 </p>';
+      if ($issue == 'who-is-who')
+      $body .= '<p><a href="/who-is-who/order/">вернуться к форме подписки</a></p>';
+      else if ($issue == 'encyclopedia')
+      $body .= '<p><a href="/encyclopedia/order/">вернуться к форме подписки</a></p>';
+      else if ($issue == 'digital')
+      $body .= '<p><a href="/encyclopedia/order/dt/">вернуться к форме подписки</a></p>';	
+      else
+      $body .= '<p><a href="/standart/subscription/form/">вернуться к форме подписки</a></p>';
+      $body .= '</div>';
+    } else {
+      
+      if ($res != ''){
+        $res = explode("|",$res);	
+        $elem = $res[0];
+        $msg = $res[1];
+        $body .= "<script> salert('".$elem."','".$msg."'); </script>";
+      }
+    
+      $body .= "
+     
+      <script>
+        function trim(string) {
+         string = string+'';
+         return string.replace(/^\s+|\s+$/g, '');
+        };
+      
+        function salert(e,s){
+          alert(s);
+          document.getElementById(e).focus();
+        }
+    
+        function dosubmit(){";
+        
+        if ($issue == '')
+        $body .= "	
+          var s_issue_start = document.getElementById('s_issue_start').value;
+          if (trim(s_issue_start) == '' ) {salert('s_issue_start','Заполните обязательное поле \'Номер С\'!');return false;}	
+          var s_issue_end = document.getElementById('s_issue_end').value;
+          if (trim(s_issue_end) == '' ) {salert('s_issue_end','Заполните обязательное поле \'Номер По\'!');return false;}";	
+        else {
+          if ($issue == 'digital'){
+            $body .= "var s_issue = document.getElementById('s_issue').value;
+          if (trim(s_issue) == '' ) {salert('s_issue','Заполните обязательное поле \'Выпуск издания\'!');return false;}";
+          } else {
+            $body .= "var s_issue = document.getElementById('s_issue').value;
+          if (trim(s_issue) == '' ) {salert('s_issue','Заполните обязательное поле \'Выпуск издания\'!');return false;}";
+          }
+        }
+        $body .= "	
+          var s_fullname = document.getElementById('s_fullname').value;
+          if (trim(s_fullname) == '' ) {salert('s_fullname','Заполните обязательное поле \'ФИО\'!');return false;}	
+          var s_email = document.getElementById('s_email').value;  
+          if (trim(s_email) == '' ) {salert('s_email','Заполните обязательное поле \'E-mail\'!');return false;}	
+          var s_phone1 = document.getElementById('s_phone1').value;
+          if (trim(s_phone1) == '' ) {salert('s_phone1','Заполните обязательное поле \'Телефон\'!');return false;}	
+          var s_country = document.getElementById('s_country').value;
+          if (trim(s_country) == '' ) {salert('s_country','Заполните обязательное поле \'Страна\'!');return false;}	
+          var s_zip = document.getElementById('s_zip').value;
+          if (trim(s_zip) == '' ) {salert('s_zip','Заполните обязательное поле \'Индекс\'!');return false;}	
+          var s_city = document.getElementById('s_city').value;
+          if (trim(s_city) == '' ) {salert('s_city','Заполните обязательное поле \'Город\'!');return false;}	
+          var s_street = document.getElementById('s_street').value;
+          if (trim(s_street) == '' ) {salert('s_street','Заполните обязательное поле \'Улица\'!');return false;}	
+          var s_building = document.getElementById('s_building').value;
+          if (trim(s_building) == '' ) {salert('s_building','Заполните обязательное поле \'Дом\'!');return false;}	
+          if (document.getElementById('s_type_2').checked){ 
+            var s_company = document.getElementById('s_company').value;
+            if (trim(s_company) == '' ) {salert('s_company','Заполните обязательное поле \'Организация\'!');return false;}	 
+            var s_companyinfo = document.getElementById('s_companyinfo').value;
+            if (trim(s_companyinfo) == '' ) {salert('s_companyinfo','Заполните обязательное поле \'Реквизиты организации\'!');return false;}	
+          }
+          var s_qnt = document.getElementById('s_qnt').value;
+          if (trim(s_qnt) == '' ) {salert('s_qnt','Заполните обязательное поле \'Количество экземпляров\'!');return false;}	
+      
+          document.getElementById('sbox').style.display = 'none';
+          document.getElementById('wait').style.display = 'block';
+          document.getElementById('a1').focus();
+          document.getElementById('a1').blur();			
+          document.getElementById('sform').submit();
+          return true;
+        }
+        
+        function clickType(v) {
+          if (v == 2){
+            document.getElementById('s_type_2').checked = true;
+            document.getElementById('s_paymethod_3').checked = true;
+            document.getElementById('d_paymethod_1').style.display = 'none';
+            document.getElementById('d_paymethod_3').style.display = 'block';
+            
+            document.getElementById('r_company_sign').style.display = 'inline';
+            document.getElementById('d_companyinfo').style.display = 'block';
+          } else {
+            document.getElementById('s_type_1').checked = true;
+            document.getElementById('s_paymethod_1').checked = true;				
+            document.getElementById('d_paymethod_1').style.display = 'block';
+            document.getElementById('d_paymethod_3').style.display = 'none';
+            document.getElementById('r_company_sign').style.display = 'none';
+            document.getElementById('d_companyinfo').style.display = 'none';
+          }
+          
+        }
+        
+      </script>";
+      
+      if ($issue =='')
+      $body .= '<a href="" id="a1"></a><p> Для приобретения разовых номеров/оформления подписки необходимо оформить заявку.</p>';
+      else if ($issue =='who-is-who')
+      $body .= '<a href="" id="a1"></a><p> Для приобретения издания необходимо оформить заявку. Стоимость справочника 1000 руб. (без учета стоимости доставки). Стоимость доставки Вам сообщат после оформления заявки.</p>';
+      else if ($issue =='digital')
+      $body .= '<a href="" id="a1"></a><p> Для приобретения издания необходимо оформить заявку. Стоимость справочника 1000 руб. (без учета стоимости доставки). Стоимость доставки Вам сообщат после оформления заявки.</p>';	
+      else $body .= '<a href="" id="a1"></a><p> Для приобретения издания необходимо оформить заявку. Стоимость справочника 1000 руб. (без учета стоимости доставки). Стоимость доставки Вам сообщат после оформления заявки.</p>';	
+      
+      $body .= '<form name="sform" method="post" id="sform">';
+      $body .= '<div id="wait"><p align="center">отправка данных ...</p><img src="/img/1/loader.gif"></div>';
+      $body .= '<div id="sbox" class="formbox">';
+      
+      if ($issue =='')
+      $body .= '<label><strong>Оформить подписку как:</strong></label>';
+      else 
+      $body .= '<label><strong>Приобрести издание как:</strong></label>';
+        
+      $body .= '<div id="d_type">';
+      $body .= '<input class="" type="radio" name="s_type" id="s_type_1" value="1" onclick="clickType(1);">&nbsp;<label for="s_type_1" class="inline">Физ. лицо</label><br>';
+      $body .= '<input class="" type="radio" name="s_type" id="s_type_2" value="2" onclick="clickType(2);">&nbsp;<label for="s_type_2" class="inline">Юр. лицо</label><br>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_paymethod">';
+      $body .= '<label><strong>Способ оплаты:</strong></label>';
+      $body .= '<div id="d_paymethod_1"><input class="" type="radio" name="s_paymethod" id="s_paymethod_1" value="1">&nbsp;<label for="s_paymethod_1" class="inline">Электронный платеж через Ассист (VISA, Master Card, QIWI, WebMoney и Яндекс.Деньги)</label></div>';
+      $body .= '<div id="d_paymethod_3"><input class="" type="radio" name="s_paymethod" id="s_paymethod_3" value="3">&nbsp;<label for="s_paymethod_3" class="inline">Оплата по счету</label></div>';
+      
+      $body .= '</div>';
+      
+      if ($issue == ''){
+        $body .= '<label><strong>Номер журнала:</strong></label>';    
+        $body .= '<div id="d_issue">';
+        $body .= '<div id="d_issue_start" class="inline">';
+        $body .= '<label for="s_issue_start" class="inline">С <span>*</span></label>';
+        $body .= '<select id="s_issue_start" name="s_issue_start"  class="form-control form-select inline">
+        <option value="№1 январь 2019г.">№1 январь 2019г.</option>
+        <option value="№2 февраль 2019г.">№2 февраль 2019г.</option>
+        <option value="№3 март 2019г.">№3 март 2019г.</option>
+        <option value="№4 апрель 2019г.">№4 апрель 2019г.</option>
+        <option value="№5 май 2019г.">№5 май 2019г.</option>
+        <option value="№6 июнь 2019г.">№6 июнь 2019г.</option>
+        <option value="№7 июль 2019г.">№7 июль 2019г.</option>
+        <option value="№8 август 2019г.">№8 август 2019г.</option>
+        <option value="№9 сентябрь 2019г.">№9 сентябрь 2019г.</option>
+        <option value="№10 октябрь 2019г.">№10 октябрь 2019г.</option>
+        <option value="№11 ноябрь 2019г.">№11 ноябрь 2019г.</option>
+        <option value="№12 декабрь 2019г.">№12 декабрь 2019г.</option>
+        </select>';
+        $body .= '</div>';
+  
+        $body .= '<div id="d_issue_end" class="inline">';
+        $body .= '<label for="s_issue_end" class="inline">По <span>*</span></label>';
+        $body .= '<select id="s_issue_end" name="s_issue_end"  class="form-control form-select inline">
+        <option value="№1 январь 2019г.">№1 январь 2019г.</option>
+        <option value="№2 февраль 2019г.">№2 февраль 2019г.</option>
+        <option value="№3 март 2019г.">№3 март 2019г.</option>
+        <option value="№4 апрель 2019г.">№4 апрель 2019г.</option>
+        <option value="№5 май 2019г.">№5 май 2019г.</option>
+        <option value="№6 июнь 2019г.">№6 июнь 2019г.</option>
+        <option value="№7 июль 2019г.">№7 июль 2019г.</option>
+        <option value="№8 август 2019г.">№8 август 2019г.</option>
+        <option value="№9 сентябрь 2019г.">№9 сентябрь 2019г.</option>
+        <option value="№10 октябрь 2019г.">№10 октябрь 2019г.</option>
+        <option value="№11 ноябрь 2019г.">№11 ноябрь 2019г.</option>
+        <option value="№12 декабрь 2019г.">№12 декабрь 2019г.</option>
+        </select>';
+  
+  
+        $body .= '</div>';
+        $body .= '</div>';
+      } else {
+        $body .= '<div id="d_issues">';
+        $body .= '<label for="s_issue"><strong>Выпуск издания <span>*</span></strong></label>';
+        $body .= '<select id="s_issue" name="s_issue" class="form-control form-select">';
+        
+        if ($issue == 'encyclopedia')
+        $body .= '<option value="2016г. / 2017г.">2016г. / 2017г.</option>';      
+        else if ($issue == 'digital')
+        $body .= '<option value="2017г. / 2018г.">2017г. / 2018г.</option>';
+        else
+        $body .= '<option value="2019г. / 2020г." selected>2019г. / 2020г.</option>';
+        
+        $body .= '</select>';
+        $body .= '</div>';	
+        
+      }
+      
+      
+      
+      $body .= '<label><strong>Контактная информация:</strong></label>';
+      $body .= '<div id="d_fullname">';
+      $body .= '<label for="s_fullname">ФИО <span>*</span></label>';
+      $body .= '<input type="text" id="s_fullname" name="s_fullname" value="'.$s_fullname.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_email">';
+      $body .= '<label for="s_email">E-mail <span>*</span></label>';
+      $body .= '<input type="email" id="s_email" name="s_email" value="'.$s_email.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_phone1">';
+      $body .= '<label for="s_phone1">Телефон 1 <span>*</span></label>';
+      $body .= '<input type="text" id="s_phone1" name="s_phone1" value="'.$s_phone1.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_phone2">';
+      $body .= '<label for="s_phone2">Телефон 2</label>';
+      $body .= '<input type="text" id="s_phone2" name="s_phone2" value="'.$s_phone2.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_company">';
+      $body .= '<label for="s_company">Организация <span id="r_company_sign">*</span></label>';
+      $body .= '<input type="text" id="s_company" name="s_company" value="'.$s_company.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_companyinfo">';
+      $body .= '<label for="s_companyinfo">Реквизиты организации <span>*</span></label>';
+      $body .= '<textarea id="s_companyinfo" name="s_companyinfo" class="form-control form-input">'.$s_companyinfo.'</textarea>';
+      $body .= '</div>';
+          
+      $body .= '<label><strong>Доставка по адресу:</strong></label>';
+      $body .= '<div id="d_country">';
+      $body .= '<label for="s_country">Страна <span>*</span></label>';
+      $body .= '<input type="text" id="s_country" name="s_country" value="'.$s_country.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_zip">';
+      $body .= '<label for="s_zip">Индекс <span>*</span></label>';
+      $body .= '<input type="text" id="s_zip" name="s_zip" value="'.$s_zip.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_region">';
+      $body .= '<label for="s_region">Область</label>';
+      $body .= '<input type="text" id="s_region" name="s_region" value="'.$s_region.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_region2">';
+      $body .= '<label for="s_region2">Район</label>';
+      $body .= '<input type="text" id="s_region2" name="s_region2" value="'.$s_region2.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_city">';
+      $body .= '<label for="s_city">Город (населенный пункт) <span>*</span></label>';
+      $body .= '<input type="text" id="s_city" name="s_city" value="'.$s_city.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_street">';
+      $body .= '<label for="s_street">Улица <span>*</span></label>';
+      $body .= '<input type="text" id="s_street" name="s_street" value="'.$s_street.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_building">';
+      $body .= '<label for="s_building">Дом <span>*</span></label>';
+      $body .= '<input type="text" id="s_building" name="s_building" value="'.$s_building.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_b_number">';
+      $body .= '<label for="s_b_number">Корпус</label>';
+      $body .= '<input type="text" id="s_b_number" name="s_b_number" value="'.$s_b_number.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_b_number2">';
+      $body .= '<label for="s_b_number2">Строение</label>';
+      $body .= '<input type="text" id="s_b_number2" name="s_b_number2" value="'.$s_b_number2.'" class="form-control form-input"/>';    
+      $body .= '</div>';
+      
+      $body .= '<div id="d_litera">';
+      $body .= '<label for="s_b_litera">Литера</label>';
+      $body .= '<input type="text" id="s_b_litera" name="s_b_litera" value="'.$s_b_litera.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_office">';
+      $body .= '<label for="s_office">Квартира / офис</label>';
+      $body .= '<input type="text" id="s_office" name="s_office" value="'.$s_office.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_notes">';
+      $body .= '<label for="s_notes">Дополнительная информация по доставке</label>';
+      $body .= '<textarea id="s_notes" name="s_notes" class="form-control form-input">'.$s_notes.'</textarea>';
+      $body .= '</div>';
+      
+      $body .= '<div id="d_qnt">';
+      $body .= '<label for="s_qnt"><strong>Количество экземпляров <span>*</span></strong></label>';
+      $body .= '<input type="text" id="s_qnt" name="s_qnt" value="'.$s_qnt.'" class="form-control form-input"/>';
+      $body .= '</div>';
+      if ($issue == '')
+        $body .= '<div id="buttons"><p align="right">поля помеченные <b>*</b> являются обязательными</p><input class="btn" type="button" value="оформить подписку" onclick="dosubmit();"/></div>';
+      else
+        $body .= '<div id="buttons"><p align="right">поля помеченные <b>*</b> являются обязательными</p><input type="button" value="заказать издание" onclick="dosubmit();" class="btn"/></div>';
+       
+        
+      $body .= '</div>';
+      
+      $body .= '</form>';
+      $body .= '<script> clickType('.$s_type.'); document.getElementById("s_paymethod_'.s_paymethod.'").checked=true;</script>';
+    }
+
+    return $body;  
+  }
+  
+function cn_processSform($issue){
+  
+  
+    if ($_SERVER['REQUEST_METHOD'] != 'POST') { return "";}
+    
+    $s_paymethod = $_POST['s_paymethod'];
+    $s_issue = $_POST['s_issue'];
+    if ($issue != '' && trim($s_issue) == '' ) {return 's_issue|Заполните обязательное поле "Выпуск издания"!';}
+    $s_issue_start = $_POST['s_issue_start'];
+    if ($issue == '' && trim($s_issue_start) == '' ) {return 's_issue_start|Заполните обязательное поле "Номер С"!';}	
+    $s_issue_end = $_POST['s_issue_end'];
+    if ($issue == '' && trim($s_issue_end) == '' ) {return 's_issue_end|Заполните обязательное поле "Номер По"!';}	
+    $s_fullname = $_POST['s_fullname'];
+    if (trim($s_fullname) == '' ) {return 's_fullname|Заполните обязательное поле "ФИО"!';}	
+    $s_email = $_POST['s_email'];  
+    if (trim($s_email) == '' ) {return 's_email|Заполните обязательное поле "E-mail"!';}	
+    $s_phone1 = $_POST['s_phone1'];
+    if (trim($s_phone1) == '' ) {return 's_phone1|Заполните обязательное поле "Телефон"!';}	
+    $s_country = $_POST['s_country'];
+    if (trim($s_country) == '' ) {return 's_country|Заполните обязательное поле "Страна"!';}	
+    $s_zip = $_POST['s_zip'];
+    if (trim($s_zip) == '' ) {return 's_zip|Заполните обязательное поле "Индекс"!';}	
+    $s_city = $_POST['s_city'];
+    if (trim($s_city) == '' ) {return 's_city|Заполните обязательное поле "Город"!';}
+    $s_street = $_POST['s_street'];
+    if (trim($s_street) == '' ) {return 's_street|Заполните обязательное поле "Улица"!';}
+    $s_building = $_POST['s_building'];
+    if (trim($s_building) == '' ) {return 's_building|Заполните обязательное поле "Дом"!';}	
+    $s_office = $_POST['s_office'];
+    //if (trim($s_office) == '' ) {return 's_office|Заполните обязательное поле "Квартира \\ офис"!';}	
+    $s_type = $_POST['s_type'];
+    $s_company = $_POST['s_company'];
+    $s_companyinfo = $_POST['s_companyinfo'];
+    if ($s_type_2 == 2){ 
+      if (trim($s_company) == '' ) {return 's_company|Заполните обязательное поле "Организация"!';}	 
+      if (trim($s_companyinfo) == '' ) {return 's_companyinfo|Заполните обязательное поле "Реквизиты организации"!';}	
+    }
+    $s_qnt = $_POST['s_qnt'];
+    if (trim($s_qnt) == '' ) {return 's_qnt|Заполните обязательное поле "Количество экземпляров"!';}	
+    
+    $s_phone2 = $_POST['s_phone2'];
+    $s_region = $_POST['s_region'];
+    $s_region2 = $_POST['s_region2'];
+    $s_b_number = $_POST['s_b_number'];
+    $s_b_number2 = $_POST['s_b_number2'];
+    $s_b_litera = $_POST['s_b_litera'];	
+    $s_notes = $_POST['s_notes'];
+    
+    
+    
+    if ($issue == 'who-is-who'){
+      $t 	= 'КеК : '.$s_fullname;
+      $s_uuid = 'KEK-'.date("Ymd-His");
+    }
+    else if ($issue == 'encyclopedia'){
+      $t 	= 'ЭС : '.$s_fullname;
+      $s_uuid = 'ES-'.date("Ymd-His");
+    }
+    else if ($issue == 'digital'){
+      $t 	= 'ЦТ : '.$s_fullname;
+      $s_uuid = 'DT-'.date("Ymd-His");
+    }
+    else {
+      $t 	= 'Стандарт '.strval($s_issue_start).'-'.strval($s_issue_end).' : '.$s_fullname;
+      $s_uuid = 'ST-'.date("Ymd-His");
+    }
+
+    /****************************** */
+      $subj = 'Заявка на подписку - '.$t;
+      if ($s_type == 1) $s_type = 'Физ. лицо';
+      if ($s_type == 2) $s_type = 'Юр. лицо';
+      
+      if ($s_paymethod == 0) $s_paymethod = 'Нал. курьеру';
+      if ($s_paymethod == 1) $s_paymethod = 'Эл. платеж Ассист';
+      if ($s_paymethod == 2) $s_paymethod = 'Эл. платеж Яндекс';
+      if ($s_paymethod == 3) $s_paymethod = 'Оплата по счету';
+      
+      $body = '
+      
+      <BR>IP : '.$_SERVER['REMOTE_ADDR'].'
+      <br><b>тип : </b> '.$s_type.'
+      <br><b>Дата : </b> '.date("d.m.Y H:i").'
+      <br><b>Номер заказа : </b> '.$s_uuid.'
+      <br><b>Способ оплаты : </b> '.$s_paymethod.'
+      <hr>';
+    if ($issue == '')
+      $body .= '<br><b>Издание : </b> Журнал Стандарт
+  <br><b>Номер с : </b> '.$s_issue_start.' <b>по : </b> '.$s_issue_end;
+  
+    else if ($issue == 'who-is-who')
+        $body .= '<br><b>Издание : </b> КеК '.$s_issue;
+        else if ($issue == 'digital')
+        $body .= '<br><b>Издание : </b> Цифровая трансформация '.$s_issue;
+        else
+        $body .= '<br><b>Издание : </b> Энциклопедия связи '.$s_issue;
+      
+  $body .= '<br><b>Количество экземпляров : </b> '.$s_qnt.'<hr>
+            <br><b>ФИО : </b> '.$s_fullname.'
+            <br><b>E-mail : </b> '.$s_email.'
+            <br><b>Телефон 1 : </b> '.$s_phone1.'
+            <br><b>Телефон 2 : </b> '.$s_phone2.'
+            <hr>
+            <br><b>Организация : </b> '.$s_company.'
+            <br><b>Реквизиты организации : </b> '.$s_companyinfo.'
+            <hr>
+            <br><b>Страна : </b> '.$s_country.'
+            <br><b>Индекс : </b> '.$s_zip.'
+            <br><b>Область : </b> '.$s_region.'
+            <br><b>Район : </b> '.$s_region2.'
+            <br><b>Населенный пункт (город) : </b> '.$s_city.'
+            <br><b>Улица : </b> '.$s_street.'
+            <br><b>Дом : </b> '.$s_building.'
+            <br><b>Корпус : </b> '.$s_b_number.'
+            <br><b>Строение : </b> '.$s_b_number2.'
+            <br><b>Литера : </b> '.$s_b_litera.'
+            <br><b>Квартира / офис : </b> '.$s_office.'
+            <br><b>Дополнительная информация для доставки : </b> '.$s_notes.' 
+  
+      ';
+  $node = Drupal\node\Entity\Node::create([
+        'type' => 'subscription',
+        'title' => $subj,
+        'langcode' => 'und',
+        'uid' => 1,
+        'status' => 0,
+        'body' => [['value' => $body,'summary' => '','format' => 'full_html',]],
+  ]);
+  $node->save();
+    
+
+
+      //cn_sendmail('sender@comnews.ru','sr@comnews.ru',$subj,$body);
+      $body = '<html><head><title></title><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body>'.$body.'</body></html>';
+      cn_sendHTMLMails('office@comnews.ru',$subj,$body);
+      cn_sendHTMLMails('cccp73@gmail.com',$subj,$body);
+      //cn_sendmail('sender@comnews.ru','office@comnews.ru',$subj,$body);
+      //cn_sendmail('sender@comnews.ru','cccp73@gmail.com',$subj,$body);
+    return 0;
+}
+  
+  
+

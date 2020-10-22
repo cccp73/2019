@@ -1,0 +1,11 @@
+services:
+  comnews.event_subscriber:
+    class: Drupal\comnews\EventSubscriber\ComNewsSubscriber
+    tags:
+      - {name: event_subscriber}
+  comnews.boost:
+    class: Drupal\comnews\ComNewsBoost
+  comnews.twig_extensions:
+    class: Drupal\comnews\Twig\Extension\Extensions
+    tags:
+      - { name: twig.extension }      
